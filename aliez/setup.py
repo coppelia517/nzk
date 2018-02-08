@@ -85,12 +85,12 @@ def find_package_data(
     return out
 
 
-PACKAGE = "aliez"
-NAME = "aliez"
+PACKAGE = "stve"
+NAME = "stve"
 DESCRIPTION = ""
 AUTHOR = "edith/t"
 AUTHOR_EMAIL = "dev.coppelia@gmail.com"
-URL = "https://github.com/coppelia517/nzk"
+URL = "https://github.com/coppelia517/stve"
 VERSION = __import__(PACKAGE).__version__
 
 setup(
