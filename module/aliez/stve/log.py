@@ -53,7 +53,7 @@ class Log(object):
         self.logger.addHandler(handler)
 
     @classmethod
-    def get(cls, name, level=loggin.DEBUG, format=BASE_FORMAT, filename=None, shell=True):
+    def get(cls, name, level=logging.DEBUG, format=BASE_FORMAT, filename=None, shell=True):
         logger = Log(name, level, format, shell)
         if filename != None:
             logger.addHandler(fileHandler(filename, format, level))

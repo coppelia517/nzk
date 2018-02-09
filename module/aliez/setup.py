@@ -86,7 +86,7 @@ def find_package_data(
 
 
 PACKAGE = "stve"
-NAME = "mwp"
+NAME = "stve"
 DESCRIPTION = ""
 AUTHOR = "edith/t"
 AUTHOR_EMAIL = "dev.coppelia@gmail.com"
