@@ -2,15 +2,16 @@ import os
 import sys
 import importlib
 
-from stve.define import SYLV_LIBRARY
+from stve.define import STVE_LIBRARY
 
 from stve.exception import *
 from stve.log import Log
 
 L = Log.get(__name__)
 
-def register(host=SYLV_LIBRARY):
-    service = {}
+def register(service=None, host=STVE_LIBRARY):
+    if service == None:
+        service = {}
     if not os.path.exists(host):
         raise LibraryError("%s is not exists." % (host))
     sys.path.append(host)
