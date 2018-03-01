@@ -17,6 +17,7 @@ from stve.log import Log
 from stve.workspace import Workspace
 
 from aliez.utility import *
+from aliez.exception import *
 from aliez.script.testcase_base import TestCase_Unit
 
 L = Log.get(__name__)

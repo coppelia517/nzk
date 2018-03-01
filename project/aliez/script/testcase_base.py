@@ -17,7 +17,7 @@ L = Log.get(__name__)
 
 class TestCase_Unit(unittest.TestCase):
     config = {}
-    service = library.register(library.register())
+    service = library.register(library.register(), LIB_DIR)
 
     def __init__(self, *args, **kwargs):
         super(TestCase_Unit, self).__init__(*args, **kwargs)
