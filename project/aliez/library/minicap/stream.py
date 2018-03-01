@@ -16,10 +16,11 @@ PATH = os.path.abspath(os.path.dirname(
 if not PATH in sys.path:
     sys.path.insert(0, PATH)
 
-from grog.utility import *
-from grog.utility import LOG as L
+from stve.log import Log
+from aliez.utility import *
 
 MAX_SIZE = 5
+L = Log.get(__name__)
 
 def bytes_to_int(byte_data):
     if type(byte_data) == int:
