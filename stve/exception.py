@@ -106,3 +106,11 @@ class AndroidError(StveError):
                 'message' : details
             }
         StveError.__init__(self, details)
+
+class PictureError(StveError):
+    def __init__(self, details):
+        if type(details) in STRING_SET:
+            details = {
+                'message' : details
+            }
+        StveError.__init__(self, details)

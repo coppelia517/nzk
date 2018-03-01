@@ -7,8 +7,8 @@ LIB_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if not LIB_PATH in sys.path:
     sys.path.insert(0, LIB_PATH)
 
-from adbkit import module
-from adbkit.module import Android
+from jenkins import module
+from jenkins.module import Jenkins
 
 class Factory(object):
     def __init__(self):
@@ -17,8 +17,8 @@ class Factory(object):
     def version(self):
         return __version__
 
-    def get(self, serial, host=module.PROFILE_PATH):
-        return Android(serial, host)
+    def get(self, url, username, password):
+        return Jenkins(url, username, password)
 
-NAME = "stve.android"
+NAME = "stve.jenkins"
 FACTORY = Factory()

@@ -1,5 +1,4 @@
 __version__ = (0, 1, 0)
-
 import os
 import sys
 
@@ -7,8 +6,8 @@ LIB_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if not LIB_PATH in sys.path:
     sys.path.insert(0, LIB_PATH)
 
-from adbkit import module
-from adbkit.module import Android
+from slack import module
+from slack.module import Slack
 
 class Factory(object):
     def __init__(self):
@@ -17,8 +16,8 @@ class Factory(object):
     def version(self):
         return __version__
 
-    def get(self, serial, host=module.PROFILE_PATH):
-        return Android(serial, host)
+    def get(self, token):
+        return Slack(token)
 
-NAME = "stve.android"
+NAME = "stve.slack"
 FACTORY = Factory()
