@@ -1,0 +1,168 @@
+import os
+import io
+import sys
+import time
+import threading
+
+import cv2
+from PIL import Image
+import numpy as np
+
+from stve import PYTHON_VERSION
+
+if PYTHON_VERSION == 3: from queue import Queue
+else: from Queue import Queue
+
+PATH = os.path.abspath(os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+if not PATH in sys.path:
+    sys.path.insert(0, PATH)
+
+from stve.exception import *
+from stve.cmd import run
+from stve.log import Log
+
+from aliez.utility import *
+from aliez.server.minicap import MinicapService
+
+MAX_SIZE = 5
+L = Log.get(__name__)
+
+class PatternMatchObject(object):
+    def __init__(self, _target, _box):
+        self.target = _target
+        self.box = _box
+
+    def __repr__(self):
+        return "PatternMatchObject()"
+
+    def __str__(self):
+        return "Target, Box : %s, %s" % (os.path.basename(self.target), self.box)
+
+class MinicapProc(object):
+    def __init__(self, _stream, debug=False):
+        self.stream = _stream
+        self.output = Queue()
+        self._loop_flag = True
+        self._debug = debug
+
+        #self._pattern_match = None
+        #self.patternmatch_result = Queue()
+
+        self._capture = None
+        self.capture_result = Queue()
+        self.counter = 0
+
+    def start(self, _adb=None, _pic=None):
+        self.pic = _pic
+        self.adb = _adb
+        self.service = None
+        if self.adb != None:
+            self.service = MinicapService("minicap", self.adb.get().SERIAL,
+                self.adb.get().HEIGHT, self.adb.get().WIDTH,
+                self.adb.get().MINICAP_HEIGHT, self.adb.get().MINICAP_WIDTH, self.adb.get().ROTATE)
+            self.adb.forward("tcp:%s localabstract:minicap" % str(self.port))
+        self.stream.start(); time.sleep(1)
+        self.loop = threading.Thread(target=self.main_loop).start()
+
+    def finish(self):
+        self._loop_flag = False; time.sleep(2)
+        self.stream.finish(); time.sleep(2)
+        if self.service != None:
+            self.service.stop()
+
+    def get_d(self):
+        return self.output.qsize()
+
+    def get_frame(self):
+        return self.output.get()
+
+    def __save(self, filename, data):
+        with open(filename, "wb") as f:
+            f.write(data)
+            f.flush()
+
+    def __save_cv(self, filename, img_cv):
+        return cv2.imwrite(filename, img_cv)
+
+    def __save_evidence(self, number, data):
+        if number < 10: number = "0000%s" % str(number)
+        elif number < 100: number = "000%s" % str(number)
+        elif number < 1000: number = "00%s" % str(number)
+        elif number < 10000: number = "0%s" % str(number)
+        else: number = str(number)
+        self.__save_cv(os.path.join(TMP_EVIDENCE_DIR, "image_%s.png" % number), data)
+
+    def search_pattern(self, target, box=None, timeout=5):
+        self._pattern_match = PatternMatchObject(target, box)
+        L.debug(self._pattern_match)
+        for _ in range(timeout):
+            result = self.patternmatch_result.get()
+            if result != None: break;
+        self._pattern_match = None
+        return result
+
+    def capture_image(self, filename, timeout=1):
+        self._capture = filename
+        for _ in range(timeout):
+            result = self.capture_result.get()
+            if result: break
+        abspath = os.path.join(TMP_DIR, filename)
+        self._capture = None
+        return abspath
+
+    def create_video(self, src, dst, filename="output.avi"):
+        output = os.path.join(dst, filename)
+        if os.path.exists(output):
+            os.remove(output)
+        cmd = r'%s -r 3 -i %s -vcodec mjpeg %s' % (
+            FFMPEG_BIN, os.path.join(src, "image_%05d.png"), os.path.join(dst, filename))
+        L.debug(run(cmd)[0])
+
+    def main_loop(self):
+        if self._debug: cv2.namedWindow("debug")
+        while self._loop_flag:
+            data = self.stream.picture.get()
+
+            image_pil = Image.open(io.BytesIO(data))
+            image_cv = cv2.cvtColor(np.asarray(image_pil), cv2.COLOR_RGB2BGR)
+
+            if self._capture != None:
+                outputfile = os.path.join(TMP_DIR, self._capture)
+                result = self.__save_cv(outputfile, image_cv)
+                self.capture_result.put(result)
+
+            if self._pattern_match != None:
+                if self.pic != None:
+                    result, image_cv = self.pic.search_pattern(
+                        image_cv, self._pattern_match.target, self._pattern_match.box, TMP_DIR)
+                    self.patternmatch_result.put(result)
+
+            if self.counter % 10 == 0:
+                self.__save_evidence(self.counter / 10, image_cv)
+
+            if self._debug:
+                if self.adb == None:
+                    resize_image_cv = cv2.resize(image_cv, (640, 360))
+                else:
+                    w = int(int(self.adb.get().MINICAP_WIDTH) / 2)
+                    h = int(int(self.adb.get().MINICAP_HEIGHT) / 2)
+                    if int(self.adb.get().ROTATE) == 0:
+                        resize_image_cv = cv2.resize(image_cv, (h, w))
+                    else:
+                        resize_image_cv = cv2.resize(image_cv, (w, h))
+                cv2.imshow('debug', resize_image_cv)
+                key = cv2.waitKey(5)
+                if key == 27: break
+            self.counter += 1
+
+            ret, jpeg = cv2.imencode('.jpg', image_cv)
+            self.output.put(jpeg.tobytes())
+            if self.get_d() > MAX_SIZE: self.output.get()
+        if self._debug: cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    proc = MinicapProc(debug=True)
+    proc.start()
+    time.sleep(10)
+    proc.finish()
