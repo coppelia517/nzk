@@ -13,8 +13,7 @@ from stve import PYTHON_VERSION
 if PYTHON_VERSION == 3: from queue import Queue
 else: from Queue import Queue
 
-PATH = os.path.abspath(os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+PATH = os.path.abspath(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if not PATH in sys.path:
     sys.path.insert(0, PATH)
 
@@ -23,21 +22,11 @@ from stve.cmd import run
 from stve.log import Log
 
 from aliez.utility import *
-from aliez.server.minicap import MinicapService
+from aliez.library.minicap.server import MinicapService
 
 MAX_SIZE = 5
 L = Log.get(__name__)
 
-class PatternMatchObject(object):
-    def __init__(self, _target, _box):
-        self.target = _target
-        self.box = _box
-
-    def __repr__(self):
-        return "PatternMatchObject()"
-
-    def __str__(self):
-        return "Target, Box : %s, %s" % (os.path.basename(self.target), self.box)
 
 class MinicapProc(object):
     def __init__(self, _stream, debug=False):
@@ -46,22 +35,20 @@ class MinicapProc(object):
         self._loop_flag = True
         self._debug = debug
 
-        #self._pattern_match = None
-        #self.patternmatch_result = Queue()
-
         self._capture = None
         self.capture_result = Queue()
         self.counter = 0
 
-    def start(self, _adb=None, _pic=None):
-        self.pic = _pic
+    def start(self, _adb=None):
         self.adb = _adb
         self.service = None
         if self.adb != None:
             self.service = MinicapService("minicap", self.adb.get().SERIAL,
                 self.adb.get().HEIGHT, self.adb.get().WIDTH,
                 self.adb.get().MINICAP_HEIGHT, self.adb.get().MINICAP_WIDTH, self.adb.get().ROTATE)
-            self.adb.forward("tcp:%s localabstract:minicap" % str(self.port))
+            L.info(self.service)
+            self.service.start()
+            self.adb.forward("tcp:%s localabstract:minicap" % str(1313))
         self.stream.start(); time.sleep(1)
         self.loop = threading.Thread(target=self.main_loop).start()
 
@@ -93,15 +80,6 @@ class MinicapProc(object):
         else: number = str(number)
         self.__save_cv(os.path.join(TMP_EVIDENCE_DIR, "image_%s.png" % number), data)
 
-    def search_pattern(self, target, box=None, timeout=5):
-        self._pattern_match = PatternMatchObject(target, box)
-        L.debug(self._pattern_match)
-        for _ in range(timeout):
-            result = self.patternmatch_result.get()
-            if result != None: break;
-        self._pattern_match = None
-        return result
-
     def capture_image(self, filename, timeout=1):
         self._capture = filename
         for _ in range(timeout):
@@ -132,12 +110,6 @@ class MinicapProc(object):
                 result = self.__save_cv(outputfile, image_cv)
                 self.capture_result.put(result)
 
-            if self._pattern_match != None:
-                if self.pic != None:
-                    result, image_cv = self.pic.search_pattern(
-                        image_cv, self._pattern_match.target, self._pattern_match.box, TMP_DIR)
-                    self.patternmatch_result.put(result)
-
             if self.counter % 10 == 0:
                 self.__save_evidence(self.counter / 10, image_cv)
 
@@ -162,7 +134,12 @@ class MinicapProc(object):
         if self._debug: cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    proc = MinicapProc(debug=True)
-    proc.start()
+    from stve import library
+    service = library.register(library.register(), LIB_DIR)
+    L.info(service)
+    stream = service["aliez.stve.minicap"].get()
+    adb = service["stve.android"].get("BH9037HP5U")
+    proc = MinicapProc(stream, debug=True)
+    proc.start(adb)
     time.sleep(10)
     proc.finish()

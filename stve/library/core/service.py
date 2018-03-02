@@ -18,5 +18,5 @@ class Factory(object):
         return True
 
 
-NAME = "sylvia.core"
+NAME = "stve.core"
 FACTORY = Factory()
