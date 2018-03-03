@@ -78,6 +78,12 @@ class MinicapStream(object):
             MinicapStream.__mutex.release()
         return MinicapStream.__instance
 
+    def get_ip(self):
+        return self.IP
+
+    def get_port(self):
+        return self.PORT
+
     def get_queue(self):
         return self.picture
 

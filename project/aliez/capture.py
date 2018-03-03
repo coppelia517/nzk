@@ -20,17 +20,16 @@ if not PATH in sys.path:
 from stve.exception import *
 from stve.cmd import run
 from stve.log import Log
-
 from aliez.utility import *
-from aliez.library.minicap.server import MinicapService
 
 MAX_SIZE = 5
 L = Log.get(__name__)
 
 
 class MinicapProc(object):
-    def __init__(self, _stream, debug=False):
+    def __init__(self, _stream, _service, debug=False):
         self.stream = _stream
+        self.service = _service
         self.output = Queue()
         self._loop_flag = True
         self._debug = debug
@@ -39,16 +38,10 @@ class MinicapProc(object):
         self.capture_result = Queue()
         self.counter = 0
 
-    def start(self, _adb=None):
+    def start(self, _adb):
         self.adb = _adb
-        self.service = None
-        if self.adb != None:
-            self.service = MinicapService("minicap", self.adb.get().SERIAL,
-                self.adb.get().HEIGHT, self.adb.get().WIDTH,
-                self.adb.get().MINICAP_HEIGHT, self.adb.get().MINICAP_WIDTH, self.adb.get().ROTATE)
-            L.info(self.service)
-            self.service.start()
-            self.adb.forward("tcp:%s localabstract:minicap" % str(1313))
+        self.service.start(self.adb); time.sleep(2)
+        self.adb.forward("tcp:%s localabstract:minicap" % str(self.stream.get_port()))
         self.stream.start(); time.sleep(1)
         self.loop = threading.Thread(target=self.main_loop).start()
 
@@ -136,10 +129,12 @@ class MinicapProc(object):
 if __name__ == "__main__":
     from stve import library
     service = library.register(library.register(), LIB_DIR)
-    L.info(service)
-    stream = service["aliez.stve.minicap"].get()
     adb = service["stve.android"].get("BH9037HP5U")
-    proc = MinicapProc(stream, debug=True)
-    proc.start(adb)
+
+    stream = service["aliez.stve.minicap"].get_stream("localhost", 1919)
+    proc = service["aliez.stve.minicap"].get_process(LOG_DIR)
+
+    main = MinicapProc(stream, proc, debug=True)
+    main.start(adb)
     time.sleep(10)
-    proc.finish()
+    main.finish()

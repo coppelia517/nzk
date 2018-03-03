@@ -1,0 +1,12 @@
+certifi==2018.1.18
+chardet==3.0.4
+colorama==0.3.9
+idna==2.6
+numpy==1.14.1
+opencv-python==3.4.0.12
+Pillow==5.0.0
+requests==2.18.4
+slacker==0.9.60
+stve==0.1.0a0
+termcolor==1.1.0
+urllib3==1.22

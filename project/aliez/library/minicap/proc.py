@@ -8,29 +8,27 @@ if not PATH in sys.path:
     sys.path.insert(0, PATH)
 
 from stve.log import Log
-import aliez.utility
-from aliez.utility import *
 
 L = Log.get(__name__)
-APP_LOG = os.path.abspath(os.path.join(LOG_DIR, "bin"))
 
 class MinicapService(object):
-    def __init__(self, name, serial, width, height, v_width, v_height, rotate):
+    def __init__(self, name, log):
+        APP_LOG = os.path.abspath(os.path.join(log, "bin"))
         if not os.path.exists(APP_LOG):
             os.mkdir(APP_LOG)
-        self.serial = serial
-        self.width = width
-        self.height = height
-        self.v_width = v_width
-        self.v_height = v_height
-        self.rotate = rotate # v: 0, h: 90
-
         self.name = name
         self.proc = None
         self.description = "Minicap Server Process."
         self.log = open(os.path.abspath(os.path.join(APP_LOG, "%s.log" % self.name)), 'w')
 
-    def start(self):
+    def start(self, adb):
+        self.serial = adb.get().SERIAL
+        self.width = adb.get().HEIGHT
+        self.height = adb.get().WIDTH
+        self.v_width = adb.get().MINICAP_HEIGHT
+        self.v_height = adb.get().MINICAP_WIDTH
+        self.rotate = adb.get().ROTATE # v: 0, h: 90
+
         LD_LIB = "LD_LIBRARY_PATH=//data//local//tmp//minicap-devel"
         BIN = "//data//local//tmp//minicap-devel//minicap"
         ARGS = "%sx%s@%sx%s/%s" % (self.width, self.height, self.v_width, self.v_height, self.rotate)
