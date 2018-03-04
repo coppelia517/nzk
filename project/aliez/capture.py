@@ -66,6 +66,7 @@ class MinicapProc(object):
         return cv2.imwrite(filename, img_cv)
 
     def __save_evidence(self, number, data):
+        number = int(number)
         if number < 10: number = "0000%s" % str(number)
         elif number < 100: number = "000%s" % str(number)
         elif number < 1000: number = "00%s" % str(number)
@@ -136,5 +137,6 @@ if __name__ == "__main__":
 
     main = MinicapProc(stream, proc, debug=True)
     main.start(adb)
-    time.sleep(10)
+    time.sleep(20)
     main.finish()
+    main.create_video(TMP_EVIDENCE_DIR, TMP_VIDEO_DIR)
