@@ -236,7 +236,7 @@ class Android(object):
             self.keyevent(self.get().KEYCODE_SPACE)
 
     def _text(self, cmd):
-        if "text" in cmd: 
+        if "text" in cmd:
             L.debug("command include [text]. : %s" % cmd)
         cmd = "text %s" % cmd
         return self.input(cmd)

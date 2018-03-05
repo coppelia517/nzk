@@ -4,13 +4,13 @@ import unittest
 
 from stve.log import Log
 from aliez.utility import *
-from aliez.script import testcase_base
+from aliez.script import testcase
 
 L = Log.get(__name__)
 def info(string, cr=True):
     desc(string, L, cr)
 
-class TestCase(testcase_base.TestCase_Unit):
+class TestCase(testcase.TestCase_Base):
     def __init__(self, *args, **kwargs):
         super(TestCase, self).__init__(*args, **kwargs)
 
@@ -20,11 +20,12 @@ class TestCase(testcase_base.TestCase_Unit):
 
     def test_1(self):
         info("*** Test Original. ***", cr=False)
-        assert True
-
-    def test_2(self):
-        info("*** Test Original. ***")
-        assert True
+        self.minicap_start()
+        self.sleep(3)
+        self.minicap_screenshot()
+        self.sleep(3)
+        self.minicap_finish(); self.sleep(3)
+        self.minicap_create_video()
 
     @classmethod
     def tearDownClass(cls):

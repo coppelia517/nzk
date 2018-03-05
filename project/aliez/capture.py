@@ -83,12 +83,13 @@ class MinicapProc(object):
         self._capture = None
         return abspath
 
-    def create_video(self, src, dst, filename="output.avi"):
+    def create_video(self, src, dst, filename="output.mp4"):
         output = os.path.join(dst, filename)
         if os.path.exists(output):
             os.remove(output)
-        cmd = r'%s -r 3 -i %s -vcodec mjpeg %s' % (
+        cmd = r'%s -r 3 -i %s -an -vcodec libx264 -pix_fmt yuv420p %s' % (
             FFMPEG_BIN, os.path.join(src, "image_%05d.png"), os.path.join(dst, filename))
+        L.debug(cmd)
         L.debug(run(cmd)[0])
 
     def main_loop(self):
@@ -130,6 +131,7 @@ class MinicapProc(object):
 if __name__ == "__main__":
     from stve import library
     service = library.register(library.register(), LIB_DIR)
+    L.info(service)
     adb = service["stve.android"].get("BH9037HP5U")
 
     stream = service["aliez.stve.minicap"].get_stream("localhost", 1919)
