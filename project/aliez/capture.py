@@ -26,6 +26,18 @@ MAX_SIZE = 5
 L = Log.get(__name__)
 
 
+class PatternMatchObject(object):
+    def __init__(self, _target, _box):
+        self.target = _target
+        self.box = _box
+
+    def __repr__(self):
+        return "PatternMatchObject()"
+
+    def __str__(self):
+        return "Target, Box : %s, %s" % (os.path.basename(self.target), self.box)
+
+
 class MinicapProc(object):
     def __init__(self, _stream, _service, debug=False):
         self.stream = _stream
@@ -34,12 +46,17 @@ class MinicapProc(object):
         self._loop_flag = True
         self._debug = debug
 
+        self._pattern_match = None
+        self.patternmatch_result = Queue()
+
         self._capture = None
         self.capture_result = Queue()
+
         self.counter = 0
 
-    def start(self, _adb):
+    def start(self, _adb, _pic):
         self.adb = _adb
+        self.pic = _pic
         self.service.start(self.adb); time.sleep(2)
         self.adb.forward("tcp:%s localabstract:minicap" % str(self.stream.get_port()))
         self.stream.start(); time.sleep(1)
@@ -74,6 +91,15 @@ class MinicapProc(object):
         else: number = str(number)
         self.__save_cv(os.path.join(TMP_EVIDENCE_DIR, "image_%s.png" % number), data)
 
+    def search_pattern(self, target, box=None, timeout=5):
+        self._pattern_match = PatternMatchObject(target, box)
+        L.debug(self._pattern_match)
+        for _ in range(timeout):
+            result = self.patternmatch_result.get()
+            if result != None: break;
+        self._pattern_match = None
+        return result
+
     def capture_image(self, filename, timeout=1):
         self._capture = filename
         for _ in range(timeout):
@@ -90,7 +116,7 @@ class MinicapProc(object):
         cmd = r'%s -r 3 -i %s -an -vcodec libx264 -pix_fmt yuv420p %s' % (
             FFMPEG_BIN, os.path.join(src, "image_%05d.png"), os.path.join(dst, filename))
         L.debug(cmd)
-        L.debug(run(cmd)[0])
+        return run(cmd)
 
     def main_loop(self):
         if self._debug: cv2.namedWindow("debug")
@@ -105,8 +131,8 @@ class MinicapProc(object):
                 result = self.__save_cv(outputfile, image_cv)
                 self.capture_result.put(result)
 
-            if self.counter % 10 == 0:
-                self.__save_evidence(self.counter / 10, image_cv)
+            if self.counter % 5 == 0:
+                self.__save_evidence(self.counter / 5, image_cv)
 
             if self._debug:
                 if self.adb == None:

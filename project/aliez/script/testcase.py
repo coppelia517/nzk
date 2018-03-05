@@ -40,14 +40,18 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         cls.minicap = MinicapProc(stream, proc, debug=cls.get("args.debug"))
 
     def minicap_start(self):
-        self.minicap.start(self.adb)
+        L.info(" === Open Minicap Process. === ")
+        self.minicap.start(self.adb, self.pic)
 
     def minicap_finish(self):
-        self.minicap.finish(); time.sleep(2)
+        L.info(" === Close Minicap Process. === ")
+        self.minicap.finish()
 
     def minicap_screenshot(self, filename=None):
         if filename == None: filename = "capture.png"
-        return self.minicap.capture_image(filename)
+        path = self.minicap.capture_image(filename)
+        L.info("Get ScreenShot : %s" % path)
+        return path
 
     def minicap_create_video(self):
         self.minicap.create_video(TMP_EVIDENCE_DIR, TMP_VIDEO_DIR)
