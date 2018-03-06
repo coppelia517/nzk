@@ -20,12 +20,31 @@ class TestCase(testcase.TestCase_Base):
 
     def test_1(self):
         info("*** Test Original. ***", cr=False)
-        self.minicap_start()
-        self.sleep(3)
-        self.minicap_screenshot()
-        self.sleep(3)
-        self.minicap_finish(); self.sleep(3)
-        self.minicap_create_video()
+        try:
+            self.minicap_start()
+            self.adb.stop(self.get("settings.app")); self.sleep()
+            self.adb.invoke(self.get("settings.app")); self.sleep()
+            assert self.exists("settings")
+
+            while not self.exists("settings/device_info"):
+                x = str(int(self.adb.get().WIDTH) / 2)
+                self.adb.input("swipe %s %s %s %s" % (x, self.adb.get().HEIGHT, x, "0")); self.sleep()
+
+            assert self.exists("settings/device_info")
+            self.tap("settings/device_info")
+
+            while not self.exists("settings/device_info/build_number"):
+                x = str(int(self.adb.get().WIDTH) / 2)
+                self.adb.input("swipe %s %s %s %s" % (x, self.adb.get().HEIGHT, x, "0")); self.sleep()
+
+            self.minicap_screenshot("result.png")
+
+            self.minicap_finish(); self.sleep(3)
+        except Exception as e:
+            L.warning(type(e).__name__ + ": " + str(e))
+            self.minicap_finish(); self.sleep(2)
+            self.minicap_create_video()
+
 
     @classmethod
     def tearDownClass(cls):

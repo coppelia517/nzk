@@ -93,7 +93,7 @@ class MinicapProc(object):
 
     def search_pattern(self, target, box=None, timeout=5):
         self._pattern_match = PatternMatchObject(target, box)
-        L.debug(self._pattern_match)
+        # L.debug(self._pattern_match)
         for _ in range(timeout):
             result = self.patternmatch_result.get()
             if result != None: break;
@@ -130,6 +130,12 @@ class MinicapProc(object):
                 outputfile = os.path.join(TMP_DIR, self._capture)
                 result = self.__save_cv(outputfile, image_cv)
                 self.capture_result.put(result)
+
+            if self._pattern_match != None:
+                if self.pic != None:
+                    result, image_cv = self.pic.search_pattern(
+                        image_cv, self._pattern_match.target, self._pattern_match.box, TMP_DIR)
+                    self.patternmatch_result.put(result)
 
             if self.counter % 5 == 0:
                 self.__save_evidence(self.counter / 5, image_cv)

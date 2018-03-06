@@ -22,3 +22,22 @@ FFMPEG_BIN = os.path.normpath(os.path.join(BIN_DIR, "ffmpeg", "bin", "ffmpeg.exe
 def desc(string, L, cr=True):
     if cr: print()
     L.info(string)
+
+DEBUG = True
+TIMEOUT_COUNT=10
+TIMEOUT_LOOP=10
+TAP_THRESHOLD=0.2
+
+class POINT(object):
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+    def __repr__(self):
+        return "POINT()"
+
+    def __str__(self):
+        return "(X, Y) = (%s, %s), Width = %s, Height = %s" \
+            % (str(self.x), str(self.y), str(self.width), str(self.height))
