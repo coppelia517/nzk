@@ -37,7 +37,8 @@ class TestCase(testcase.TestCase_Base):
                 x = str(int(self.adb.get().WIDTH) / 2)
                 self.adb.input("swipe %s %s %s %s" % (x, self.adb.get().HEIGHT, x, "0")); self.sleep()
 
-            self.minicap_screenshot("result.png")
+            filename = self.minicap_screenshot("result.png")
+            L.info(self.ocr.img_to_string(filename))
 
             self.minicap_finish(); self.sleep(3)
         except Exception as e:

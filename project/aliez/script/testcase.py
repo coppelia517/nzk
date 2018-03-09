@@ -36,9 +36,12 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         else:
             cls.adb = cls.service["stve.android"].get(cls.get("args.serial"))
         cls.pic = cls.service["stve.picture"].get()
+
         stream = cls.service["aliez.stve.minicap"].get_stream(cls.get("minicap.ip"), cls.get("minicap.port"))
         proc = cls.service["aliez.stve.minicap"].get_process(LOG_DIR)
         cls.minicap = MinicapProc(stream, proc, debug=cls.get("args.debug"))
+
+        cls.ocr = cls.service["aliez.stve.ocr"].get(cls.pic)
 
     def minicap_start(self):
         L.info(" === Open Minicap Process. === ")

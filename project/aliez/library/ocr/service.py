@@ -16,8 +16,8 @@ class Factory(object):
     def version(self):
         return __version__
 
-    def get(self):
-        return Ocr()
+    def get(self, _pic):
+        return Ocr(_pic)
 
 
 NAME = "aliez.stve.ocr"
