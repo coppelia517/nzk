@@ -3,7 +3,6 @@ import io
 import sys
 import time
 import threading
-from threading import Timer
 
 import cv2
 from PIL import Image
@@ -37,39 +36,6 @@ class PatternMatchObject(object):
 
     def __str__(self):
         return "Target, Box : %s, %s" % (os.path.basename(self.target), self.box)
-
-
-class RepeatedTimer(Timer):
-    def __init__(self, interval, function, args=[], kwargs={}):
-        Timer.__init__(self, interval, self.run, args, kwargs)
-        self.thread = None
-        self.function = function
-
-    def run(self):
-        self.thread = Timer(self.interval, self.run)
-        self.thread.start()
-        self.function(*self.args, **self.kwargs)
-
-    def cancel(self):
-        if self.thread is not None:
-            self.thread.cancel()
-            self.thread.join()
-            del self.thread
-
-if __name__=='__main__':
-
-  import time
-
-  def hello(message):
-    hello.counter += 1
-    print(message, hello.counter)
-  hello.counter = 0
-
-  t = RepeatedTimer(0.5, hello, ["Hello"])
-  t.start()
-  time.sleep(5)
-  t.cancel()
-  print("Done.")
 
 
 class MinicapProc(object):
@@ -125,21 +91,15 @@ class MinicapProc(object):
         else: number = str(number)
         self.__save_cv(os.path.join(TMP_EVIDENCE_DIR, "image_%s.png" % number), data)
 
-    def search_pattern(self, target, box=None, timeout=5):
+    def search_pattern(self, target, box=None, _timeout=5):
         self._pattern_match = PatternMatchObject(target, box)
-        # L.debug(self._pattern_match)
-        t = RepeatedTimer(0.5, hello, ["Hello"])
-        for _ in range(timeout):
-            result = self.patternmatch_result.get()
-            if result != None: break;
+        result = self.patternmatch_result.get(timeout=_timeout)
         self._pattern_match = None
         return result
 
-    def capture_image(self, filename, timeout=1):
+    def capture_image(self, filename, _timeout=5):
         self._capture = filename
-        for _ in range(timeout):
-            result = self.capture_result.get()
-            if result: break
+        self.capture_result.get(timeout=_timeout)
         abspath = os.path.join(TMP_DIR, filename)
         self._capture = None
         return abspath
