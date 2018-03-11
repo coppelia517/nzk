@@ -3,6 +3,7 @@ import io
 import sys
 import time
 import threading
+from threading import Timer
 
 import cv2
 from PIL import Image
@@ -36,6 +37,39 @@ class PatternMatchObject(object):
 
     def __str__(self):
         return "Target, Box : %s, %s" % (os.path.basename(self.target), self.box)
+
+
+class RepeatedTimer(Timer):
+    def __init__(self, interval, function, args=[], kwargs={}):
+        Timer.__init__(self, interval, self.run, args, kwargs)
+        self.thread = None
+        self.function = function
+
+    def run(self):
+        self.thread = Timer(self.interval, self.run)
+        self.thread.start()
+        self.function(*self.args, **self.kwargs)
+
+    def cancel(self):
+        if self.thread is not None:
+            self.thread.cancel()
+            self.thread.join()
+            del self.thread
+
+if __name__=='__main__':
+
+  import time
+
+  def hello(message):
+    hello.counter += 1
+    print(message, hello.counter)
+  hello.counter = 0
+
+  t = RepeatedTimer(0.5, hello, ["Hello"])
+  t.start()
+  time.sleep(5)
+  t.cancel()
+  print("Done.")
 
 
 class MinicapProc(object):
@@ -94,6 +128,7 @@ class MinicapProc(object):
     def search_pattern(self, target, box=None, timeout=5):
         self._pattern_match = PatternMatchObject(target, box)
         # L.debug(self._pattern_match)
+        t = RepeatedTimer(0.5, hello, ["Hello"])
         for _ in range(timeout):
             result = self.patternmatch_result.get()
             if result != None: break;

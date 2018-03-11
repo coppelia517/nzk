@@ -72,10 +72,16 @@ class TestCase_Base(testcase_base.TestCase_Unit):
 
     def __get_cv(self, target):
         try:
-            if self.get("args.package") == None:
-                return "cv://%s" % target
-            else:
-                return "cv://%s/%s" % (self.get("args.package"), target)
+            if self.get("args.package") == None: return "cv://%s" % target
+            else: return "cv://%s/%s" % (self.get("args.package"), target)
+        except Exception as e:
+            L.warning(e);
+            raise ResourceError("Can't found Resource File. %s" % str(e))
+
+    def __get_ocr(self, target):
+        try:
+            if self.get("args.package") == None: return "ocr://%s" % target
+            else: return "ocr://%s/%s" % (self.get("args.package"), target)
         except Exception as e:
             L.warning(e);
             raise ResourceError("Can't found Resource File. %s" % str(e))
