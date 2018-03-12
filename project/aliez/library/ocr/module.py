@@ -40,6 +40,7 @@ class Ocr(object):
         cv2.rectangle(reference,
                       (box.x, box.y),
                       (box.x + box.width, box.y + box.height), (255, 0, 0), 5)
+
         img_gray = cv2.cvtColor(reference, cv2.COLOR_BGR2GRAY)
         img_gray = img_gray[box.y:(box.y + box.height), box.x:(box.x + box.width)]
         if tmp != None:

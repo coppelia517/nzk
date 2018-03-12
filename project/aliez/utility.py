@@ -25,7 +25,7 @@ def desc(string, L, cr=True):
 
 DEBUG = True
 TIMEOUT_COUNT=10
-TIMEOUT_LOOP=10
+TIMEOUT_LOOP=30
 TAP_THRESHOLD=0.2
 
 class POINT(object):

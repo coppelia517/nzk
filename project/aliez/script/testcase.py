@@ -3,9 +3,14 @@ import sys
 import glob
 import time
 import random
+import threading
 
+from stve import PYTHON_VERSION
 from stve.log import Log
 from stve.exception import *
+
+if PYTHON_VERSION == 3: from queue import Queue
+else: from Queue import Queue
 
 from aliez.capture import MinicapProc
 from aliez.utility import *
@@ -21,6 +26,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         super(TestCase_Base, self).__init__(*args, **kwargs)
         self.get_config(self.get("args.config"))
         self.get_service()
+        self._wait_loop_flag = False
 
     def arg_parse(self, parser):
         super(TestCase_Base, self).arg_parse(parser)
@@ -114,7 +120,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
     def exists(self, location, _id=None, area=None, threshold=5):
         path, name, area = self.__validate(location, _id, area)
         for f in glob.glob(os.path.join(path, name)):
-            L.debug("File : %s" % (f))
+            L.debug("File : %s - %s" % (location, os.path.basename(f)))
             result = self.minicap.search_pattern(
                 os.path.join(os.path.join(path, f)), area, threshold)
             if result != None: return True
@@ -134,20 +140,33 @@ class TestCase_Base(testcase_base.TestCase_Unit):
                 if result != None: return result
             return None
 
-    def wait(self, location, _id=None, area=None, threshold=1, loop=TIMEOUT_LOOP):
+    def __wait_loop(self, location, _id=None, area=None, threshold=5):
+        while self._wait_loop_flag:
+            if self.exists(location, _id, area, threshold):
+                self.wait_queue.put(True)
+            self.sleep(base=0.5)
+        L.info("Wait Loop Stop.")
+
+    def wait(self, location, _id=None, area=None, threshold=5, _timeout=TIMEOUT_LOOP):
         try:
+            self._wait_loop_flag = True
             start = time.time()
-            for _ in range(int(loop)):
-                if self.exists(location, _id, area, threshold): return True
-                self.sleep(base=3)
-            self.minicap_screenshot('wait_failed.png')
-            return False
+            self.wait_queue = Queue()
+            self.loop = threading.Thread(
+                target=self.__wait_loop, args=(location, _id, area, threshold, )).start()
+            result = self.wait_queue.get(timeout=_timeout)
+            if result != None:
+                return result
+            else:
+                self.minicap_screenshot('wait_failed.png')
+                return False
         finally:
+            self._wait_loop_flag = False
             L.debug("Elapsed Time : %s" % str(time.time() - start))
 
     def tap(self, location, _id=None, area=None, wait=True, threshold=TAP_THRESHOLD, loop=TIMEOUT_LOOP):
         if wait:
-            if not self.wait(location, _id, area, threshold=10, loop=loop):
+            if not self.wait(location, _id, area, threshold=5, _timeout=loop):
                 L.warning("Can't Find Target : %s" % location)
         result = self.match(location, _id, area)
         if result != None:

@@ -96,17 +96,21 @@ class Picture(object):
 
     @classmethod
     def __patternmatch(cls, reference, target, box=None, tmp=None):
-        img_gray = cv2.cvtColor(reference, cv2.COLOR_BGR2GRAY)
-        if len(img_gray.shape) == 3: height, width, channels = img_gray.shape[:3]
-        else: height, width = img_gray.shape[:2]
+        if len(reference.shape) == 3: height, width, channels = reference.shape[:3]
+        else: height, width = reference.shape[:2]
+
         if box == None:
             box = POINT(0, 0, width, height)
         cv2.rectangle(reference,
                       (box.x, box.y),
                       (box.x + box.width, box.y + box.height), (0, 255, 0), 5)
+
+        img_gray = cv2.cvtColor(reference, cv2.COLOR_BGR2GRAY)
         img_gray = img_gray[box.y:(box.y + box.height), box.x:(box.x + box.width)]
+
         if tmp != None:
             cv2.imwrite(os.path.join(tmp, "crop.png"), img_gray)
+
         template = target
         w, h = template.shape[::-1]
         res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
