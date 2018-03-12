@@ -31,27 +31,35 @@ class Ocr(object):
         lang = langs[0]
         L.info("Will use lang '%s'" % lang)
 
-    def img_to_string(self, filename, _lang="eng", box=None, tmp=None):
-        if not os.path.exists(filename):
-            raise PictureError("it is not exists reference file. : %s" % filename)
-        ref_cv = cv2.imread(filename)
-
-        if len(ref_cv.shape) == 3: height, width, channels = ref_cv.shape[:3]
-        else: height, width = ref_cv.shape[:2]
+    def __img_to_string(self, reference, box=None, tmp=None, _lang="eng"):
+        if len(reference.shape) == 3: height, width, channels = reference.shape[:3]
+        else: height, width = reference.shape[:2]
 
         if box == None:
             box = POINT(0, 0, width, height)
-        cv2.rectangle(ref_cv,
+        cv2.rectangle(reference,
                       (box.x, box.y),
-                      (box.x + box.width, box.y + box.height), (0, 255, 0), 5)
-        img_gray = cv2.cvtColor(ref_cv, cv2.COLOR_BGR2GRAY)
+                      (box.x + box.width, box.y + box.height), (255, 0, 0), 5)
+        img_gray = cv2.cvtColor(reference, cv2.COLOR_BGR2GRAY)
+        img_gray = img_gray[box.y:(box.y + box.height), box.x:(box.x + box.width)]
         if tmp != None:
             cv2.imwrite(os.path.join(tmp, "crop.png"), img_gray)
-        img_gray = img_gray[box.y:(box.y + box.height), box.x:(box.x + box.width)]
         txt = self.tool.image_to_string(
             self.pic.to_pil(img_gray),
             lang=_lang,
             builder = pyocr.builders.TextBuilder(tesseract_layout=6)
         )
+        return txt, reference
+
+    def img_to_string(self, reference, box=None, tmp=None, _lang="eng"):
+        txt, ref = self.__img_to_string(reference, box, tmp, _lang)
+        L.info("Get Text -> %s" % (txt))
+        return txt, reference
+
+    def file_to_string(self, filename, box=None, tmp=None, _lang="eng"):
+        if not os.path.exists(filename):
+            raise PictureError("it is not exists reference file. : %s" % filename)
+        ref_cv = cv2.imread(filename)
+        txt, ref = self.__img_to_string(ref_cv, box, tmp, _lang)
         L.info("%s -> %s" % (filename, txt))
         return txt

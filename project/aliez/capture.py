@@ -49,14 +49,18 @@ class MinicapProc(object):
         self._pattern_match = None
         self.patternmatch_result = Queue()
 
+        self._ocr = None
+        self.ocr_result = Queue()
+
         self._capture = None
         self.capture_result = Queue()
 
         self.counter = 0
 
-    def start(self, _adb, _pic):
+    def start(self, _adb, _pic, _ocr):
         self.adb = _adb
         self.pic = _pic
+        self.ocr = _ocr
         self.service.start(self.adb); time.sleep(2)
         self.adb.forward("tcp:%s localabstract:minicap" % str(self.stream.get_port()))
         self.stream.start(); time.sleep(1)
@@ -97,6 +101,12 @@ class MinicapProc(object):
         self._pattern_match = None
         return result
 
+    def search_ocr(self, box=None, _timeout=5):
+        self._ocr = PatternMatchObject("dummy", box)
+        result = self.ocr_result.get(timeout=_timeout)
+        self._ocr = None
+        return result
+
     def capture_image(self, filename, _timeout=5):
         self._capture = filename
         self.capture_result.get(timeout=_timeout)
@@ -131,6 +141,12 @@ class MinicapProc(object):
                     result, image_cv = self.pic.search_pattern(
                         image_cv, self._pattern_match.target, self._pattern_match.box, TMP_DIR)
                     self.patternmatch_result.put(result)
+
+            if self._ocr != None:
+                if self.ocr != None:
+                    result, image_cv = self.ocr.img_to_string(
+                        image_cv, self._ocr.box, TMP_DIR)
+                    self.ocr_result.put(result)
 
             if self.counter % 5 == 0:
                 self.__save_evidence(self.counter / 5, image_cv)

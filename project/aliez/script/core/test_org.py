@@ -40,7 +40,7 @@ class TestCase(testcase.TestCase_Base):
             filename = self.minicap_screenshot("result.png")
             _box = POINT(25, 1115, (200-25), (1150 - 1115))
             L.info(_box)
-            L.info(self.ocr.img_to_string(filename, "eng", _box, TMP_DIR))
+            L.info(self.minicap_search_ocr(_box))
 
             self.minicap_finish(); self.sleep(3)
         except Exception as e:

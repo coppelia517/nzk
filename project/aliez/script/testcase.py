@@ -45,7 +45,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
 
     def minicap_start(self):
         L.info(" === Open Minicap Process. === ")
-        self.minicap.start(self.adb, self.pic)
+        self.minicap.start(self.adb, self.pic, self.ocr)
 
     def minicap_finish(self):
         L.info(" === Close Minicap Process. === ")
@@ -62,6 +62,9 @@ class TestCase_Base(testcase_base.TestCase_Unit):
 
     def minicap_search_pattern(self, reference, box=None, count=30):
         return self.minicap.search_pattern(reference, box, count)
+
+    def minicap_search_ocr(self, box=None, count=30):
+        return self.minicap.search_ocr(box, count)
 
     def sleep(self, base=3):
         sleep_time = (base - 0.5 * random.random())
