@@ -25,13 +25,14 @@ class Parser(object):
         if not os.path.exists(base_folder):
             raise ResourceError("Can't find base directory : %s" % info.netloc)
         for f in os.listdir(base_folder):
-            if f.find(".json") != -1:
+            if f.find("%s.json" % info.scheme) != -1:
                 with open(os.path.join(base_folder, f), 'r') as jf:
                     data = json.load(jf)
                     result = Parser.query(data, info.path)
                     if result == None:
                         ResourceError("Can't find target Infomation : %s" % info.path)
                     return Parser.path(base_folder, info.path, _id), result["name"], result["bounds"]
+        L.warning("Can't Found Resource.")
         return None, None, None
 
     @classmethod

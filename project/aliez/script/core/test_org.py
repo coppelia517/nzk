@@ -37,15 +37,13 @@ class TestCase(testcase.TestCase_Base):
                 x = str(int(self.adb.get().WIDTH) / 2)
                 self.adb.input("swipe %s %s %s %s" % (x, self.adb.get().HEIGHT, x, "0")); self.sleep()
 
-            filename = self.minicap_screenshot("result.png")
-            _box = POINT(25, 1115, (200-25), (1150 - 1115))
-            L.info(_box)
-            L.info(self.minicap_search_ocr(_box))
-
+            assert self.search_ocr("settings/device_info/build_number")
+            self.minicap_screenshot("result.png")
             self.minicap_finish(); self.sleep(3)
+
         except Exception as e:
-            L.warning(type(e).__name__ + ": " + str(e))
             self.minicap_finish(); self.sleep(2)
+            L.warning(type(e).__name__ + ": " + str(e))
             self.minicap_create_video()
 
 

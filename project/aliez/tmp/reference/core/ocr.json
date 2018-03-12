@@ -1,0 +1,10 @@
+{
+    "settings": {
+        "device_info": {
+            "build_number": {
+                "name": "34.2.B.O.279",
+                "bounds": { "s_x" : 25, "s_y" : 1115, "f_x" : 200, "f_y" : 1150 }
+            }
+        }
+    }
+}

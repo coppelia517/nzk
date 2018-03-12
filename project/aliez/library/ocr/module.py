@@ -54,7 +54,7 @@ class Ocr(object):
 
     def img_to_string(self, reference, box=None, tmp=None, _lang="eng"):
         txt, ref = self.__img_to_string(reference, box, tmp, _lang)
-        L.info("Get Text -> %s" % (txt))
+        L.debug("Get Text -> %s" % (txt))
         return txt, reference
 
     def file_to_string(self, filename, box=None, tmp=None, _lang="eng"):
