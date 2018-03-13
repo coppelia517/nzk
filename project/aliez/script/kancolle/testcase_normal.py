@@ -7,6 +7,7 @@ from stve.log import Log
 
 from aliez.utility import *
 from aliez.script import testcase
+from aliez.resource import Parser as P
 
 L = Log.get(__name__)
 
@@ -93,6 +94,60 @@ class TestCase_Normal(testcase.TestCase_Base):
         except Exception as e:
             L.warning(e)
 
+    def invoke_job(self, job, token, timeout=300):
+        L.info("Call %s : %s" % (job, self.jenkins.invoke_job(job, token, timeout)))
+
+    def invoke_quest_job(self, _id, timeout=None):
+        job = self.get("%s.jenkins" % _id)
+        if timeout == None:
+            timeout = int(self.get("%s.timeout" % _id))
+        params = {
+            'token': self.get("jenkins.token"),
+            'android_id': self.get("args.serial"),
+            'slack_id': self.get("args.slack"),
+            'delay': "%dsec" % timeout
+        }
+        L.info("Call %s : %s" % (job, self.jenkins.invoke_job_with_params(job, params)))
+
+    def call_job_tree(self, _id, timeout=60):
+        if _id == "DB01":
+            self.invoke_quest_job("DB02", timeout)
+        elif _id == "DB02":
+            self.invoke_quest_job("DB03", timeout); self.invoke_quest_job("DB04", timeout)
+            self.invoke_quest_job("WB01", timeout); self.invoke_quest_job("WB02", timeout)
+        elif _id == "DB04":
+            self.invoke_quest_job("DB05", timeout); self.invoke_quest_job("WB03", timeout)
+        elif _id == "DB05":
+            self.invoke_quest_job("DB06", timeout)
+        elif _id == "WB01":
+            self.invoke_quest_job("WB04", timeout)
+        elif _id == "WB03":
+            self.invoke_quest_job("WB05", timeout)
+        elif _id == "WB04":
+            self.invoke_quest_job("WB06", timeout)
+        else:
+            L.info("Not Call.")
+
+    def __validate_quest(self, location, _id, area=None):
+        path, name, bounds = P.search(self.__get_cv(location), _id)
+        if path == None:
+            raise ResourceError("Can't found Resource File. %s" % location)
+        if self.adb.get().ROTATE == "0":
+            w = int(self.adb.get().MINICAP_HEIGHT)
+            h = int(self.adb.get().MINICAP_WIDTH)
+        else:
+            w = int(self.adb.get().MINICAP_WIDTH)
+            h = int(self.adb.get().MINICAP_HEIGHT)
+        if area == None: area = self.__area(w, h, bounds)
+        L.info("Search : cv://%s" % (location))
+        return path, name, area
+
+    def match_quest(self, location, _id, area=None, threshold=5):
+        path, name, area = self.__validate_quest(location, _id, area)
+        for f in glob.glob(os.path.join(path,name)):
+            result = self.minicap.search_pattern(os.path.join(os.path.join(path, f)), area, threshold)
+            if result != None: return result
+        return None
 
     def home(self):
         self.tap_check("menu/home"); self.sleep()
@@ -109,14 +164,14 @@ class TestCase_Normal(testcase.TestCase_Base):
     def expedition_result(self):
         if self.exists("basic/expedition"):
             self.tap_check("basic/expedition"); time.sleep(9)
-            if self.wait("basic/expedition/success", loop="10"):
+            if self.wait("basic/expedition/success"):
                 self.message(self.get("bot.expedition_success"))
             elif self.exists("basic/expedition/failed"):
                 self.message(self.get("bot.expedition_failed"))
             self.tap("basic/next"); self.sleep()
             self.upload()
             self.tap("basic/next"); self.sleep(3)
-            self.invoke_quest_job("expedition", 60)
+            #self.invoke_quest_job("expedition", 60)
             return self.exists("basic/expedition")
         else:
             return False
