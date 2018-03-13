@@ -44,7 +44,7 @@ class Ocr(object):
         img_gray = cv2.cvtColor(reference, cv2.COLOR_BGR2GRAY)
         img_gray = img_gray[box.y:(box.y + box.height), box.x:(box.x + box.width)]
         if tmp != None:
-            cv2.imwrite(os.path.join(tmp, "crop.png"), img_gray)
+            cv2.imwrite(os.path.join(tmp, "crop_ocr.png"), img_gray)
         txt = self.tool.image_to_string(
             self.pic.to_pil(img_gray),
             lang=_lang,

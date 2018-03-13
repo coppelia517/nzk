@@ -168,7 +168,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
             if self.exists(location, _id, area, threshold):
                 self.wait_queue.put(True)
             self.sleep(base=0.5)
-        L.info("Wait Loop Stop.")
+        #L.info("Wait Loop Stop.")
 
     def wait(self, location, _id=None, area=None, threshold=5, _timeout=TIMEOUT_LOOP):
         try:
@@ -206,8 +206,9 @@ class TestCase_Base(testcase_base.TestCase_Unit):
             y = self.normalize_h(result.y)
         self.adb.tap(x, y)
 
-    def search_ocr(self, location, area=None, threshold=5):
+    def search_ocr(self, location, text=None, area=None, threshold=5):
         path, name, area = self.__validate_ocr(location, area)
+        if text != None: name = text
         result = self.minicap.search_ocr(area, _timeout=threshold)
         L.info("target : %s <-> %s : reference" % (result, name))
         return result == name

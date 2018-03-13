@@ -1,0 +1,453 @@
+{
+    "attack": {
+        "name" : "*.png",
+        "bounds" : { "s_x" : 0, "s_y" : 20, "f_x" : 40, "f_y" : 80 },
+
+        "formation": {
+            "1": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 30, "s_y" : 10, "f_x" : 100, "f_y" : 90 }
+            },
+            "2": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 30, "s_y" : 10, "f_x" : 100, "f_y" : 90 }
+            },
+            "3": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 30, "s_y" : 10, "f_x" : 100, "f_y" : 90 }
+            },
+            "4": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 30, "s_y" : 10, "f_x" : 100, "f_y" : 90 }
+            },
+            "5": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 30, "s_y" : 10, "f_x" : 100, "f_y" : 90 }
+            }
+        },
+
+        "icon": {
+            "name": "*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 10, "f_x" : 90, "f_y" : 50 }
+        },
+        "stage": {
+            "name" : "attack_stage_%s_*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 80, "f_x" : 70, "f_y" : 100 }
+        },
+        "extra": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 60, "s_y" : 0, "f_x" : 100, "f_y" : 100 }
+        },
+        "id": {
+            "name" : "attack_%s_*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 10, "f_x" : 100, "f_y" : 100 }
+        },
+        "decide": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 60, "s_y" : 75, "f_x" : 100, "f_y" : 100 }
+        },
+        "rack": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 30, "s_y" : 0, "f_x" : 90, "f_y" : 100 }
+        },
+        "damage": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 30, "s_y" : 0, "f_x" : 90, "f_y" : 100 }
+        },
+        "start": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 50, "s_y" : 75, "f_x" : 100, "f_y" : 100 }
+        },
+        "unable": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 50, "s_y" : 75, "f_x" : 100, "f_y" : 100 }
+        },
+        "compass": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 0, "s_y" : 0, "f_x" : 70, "f_y" : 100 }
+        },
+        "compass_b": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 0, "s_y" : 50, "f_x" : 50, "f_y" : 100 }
+        },
+        "night_battle": {
+            "start": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 10, "s_y" : 10, "f_x" : 90, "f_y" : 90 }
+            },
+            "stop": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 10, "s_y" : 10, "f_x" : 90, "f_y" : 90 }
+            }
+        },
+        "get": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 20, "s_y" : 0, "f_x" : 80, "f_y" : 100 }
+        },
+        "return": {
+            "name" : "*.png",
+            "bounds" : {"s_x" : 70, "s_y" : 70, "f_x" : 100, "f_y" : 100 }
+        },
+        "charge": {
+            "name" : "*.png",
+            "bounds" : {"s_x" : 0, "s_y" : 20, "f_x" : 50, "f_y" : 80 }
+        },
+        "result_damage": {
+            "name" : "*.png",
+            "bounds" : {"s_x" : 0, "s_y" : 20, "f_x" : 60, "f_y" : 100 }
+        },
+        "withdrawal": {
+            "name" : "*.png",
+            "bounds" : {"s_x" : 10, "s_y" : 10, "f_x" : 90, "f_y" : 90 }
+        },
+        "result": {
+            "a": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 40, "s_y" : 10, "f_x" : 90, "f_y" : 90 }
+            },
+            "b": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 40, "s_y" : 10, "f_x" : 90, "f_y" : 90 }
+            },
+            "c": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 40, "s_y" : 10, "f_x" : 90, "f_y" : 90 }
+            },
+            "d": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 40, "s_y" : 10, "f_x" : 90, "f_y" : 90 }
+            }
+        }
+    },
+    "basic": {
+        "home": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 30, "s_y" : 60, "f_x" : 70, "f_y" : 100 }
+        },
+
+        "next": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 70, "s_y" : 70, "f_x" : 100, "f_y" : 100 }
+        },
+
+        "fleet": {
+            "1": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 0, "s_y" : 0, "f_x" : 80, "f_y" : 40 }
+            },
+            "2": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 0, "s_y" : 0, "f_x" : 80, "f_y" : 40 }
+            },
+            "3": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 0, "s_y" : 0, "f_x" : 80, "f_y" : 40 }
+            },
+            "4": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 0, "s_y" : 0, "f_x" : 80, "f_y" : 40 }
+            }
+        },
+
+        "fleet_focus": {
+            "1": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 0, "s_y" : 0, "f_x" : 80, "f_y" : 40 }
+            },
+            "2": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 0, "s_y" : 0, "f_x" : 80, "f_y" : 40 }
+            },
+            "3": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 0, "s_y" : 0, "f_x" : 80, "f_y" : 40 }
+            },
+            "4": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 0, "s_y" : 0, "f_x" : 80, "f_y" : 40 }
+            }
+        },
+
+        "login": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 60, "s_y" : 60, "f_x" : 100, "f_y" : 100 },
+
+            "music" : {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 30, "s_y" : 40, "f_x" : 70, "f_y" : 100 }
+            }
+        },
+
+        "expedition" : {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 50, "s_y" : 0, "f_x" : 100, "f_y" : 30 },
+
+            "success" : {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 40, "s_y" : 20, "f_x" : 100, "f_y" : 80 }
+            },
+
+            "failed" : {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 40, "s_y" : 20, "f_x" : 100, "f_y" : 80 }
+            }
+        },
+        "menu": {
+            "docking": {
+                "name" : "*.png",
+                "bounds" : {"s_x" : 0, "s_y" : 10, "f_x" : 40, "f_y" : 90 }
+            }
+        }
+    },
+
+    "home": {
+        "formation": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 10, "f_x" : 40, "f_y" : 40 }
+        },
+        "attack": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 20, "f_x" : 50, "f_y" : 80 }
+        },
+        "supply": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 0, "s_y" : 20, "f_x" : 40, "f_y" : 80 }
+        },
+        "quest": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 50, "s_y" : 0, "f_x" : 100, "f_y" : 30 }
+        }
+    },
+
+    "menu": {
+        "home": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 0, "s_y" : 20, "f_x" : 30, "f_y" : 80 }
+        }
+    },
+
+    "formation": {
+        "change": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 0, "s_y" : 50, "f_x" : 40, "f_y" : 100 }
+        },
+
+        "deploy": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 0, "f_x" : 40, "f_y" : 50 }
+        },
+
+        "fleet_1": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 0, "f_x" : 40, "f_y" : 50 }
+        },
+
+        "fleet_1_focus": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 0, "f_x" : 40, "f_y" : 50 }
+        },
+
+        "select": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 0, "s_y" : 0, "f_x" : 100, "f_y" : 100 }
+        },
+
+        "fleet_name": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 20, "s_y" : 0, "f_x" : 80, "f_y" : 40 }
+        }
+    },
+
+    "expedition": {
+        "name" : "*.png",
+        "bounds" : { "s_x" : 60, "s_y" : 20, "f_x" : 100, "f_y" : 80 },
+
+        "stage": {
+            "name" : "stage_%s_*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 80, "f_x" : 70, "f_y" : 100 }
+        },
+        "id": {
+            "name" : "expedition_%s_*.png",
+            "bounds" : { "s_x" : 15, "s_y" : 25, "f_x" : 70, "f_y" : 100 }
+        },
+        "done": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 60, "s_y" : 75, "f_x" : 100, "f_y" : 100 }
+        },
+        "decide": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 60, "s_y" : 75, "f_x" : 100, "f_y" : 100 }
+        },
+        "fleet_focus": {
+            "name" : "expedition_fleet_%s_focus_*.png",
+            "bounds" : { "s_x" : 35, "s_y" : 20, "f_x" : 75, "f_y" : 50 }
+        },
+        "fleet": {
+            "name" : "expedition_fleet_%s_*.png",
+            "bounds" : { "s_x" : 35, "s_y" : 20, "f_x" : 75, "f_y" : 50 }
+        },
+        "unable": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 60, "s_y" : 75, "f_x" : 100, "f_y" : 100 }
+        },
+        "rack": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 30, "s_y" : 0, "f_x" : 90, "f_y" : 100 }
+        },
+        "start": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 60, "s_y" : 75, "f_x" : 100, "f_y" : 100 }
+        },
+        "icon": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 20, "s_y" : 0, "f_x" : 80, "f_y" : 40 }
+        }
+    },
+
+    "supply": {
+        "name" : "*.png",
+        "bounds" : { "s_x" : 0, "s_y" : 0, "f_x" : 50, "f_y" : 40 },
+
+        "vacant": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 10, "f_x" : 40, "f_y" : 90 }
+        }
+    },
+
+    "quest": {
+        "name" : "*.png",
+        "bounds" : { "s_x" : 50, "s_y" : 20, "f_x" : 100, "f_y" : 70 },
+
+        "acceptance": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 0, "s_y" : 0, "f_x" : 100, "f_y" : 100 }
+        },
+        "mission": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 0, "f_x" : 40, "f_y" : 30 }
+        },
+        "perform": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 0, "s_y" : 0, "f_x" : 40, "f_y" : 60 }
+        },
+        "perform_select": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 0, "s_y" : 0, "f_x" : 40, "f_y" : 60 }
+        },
+        "done": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 70, "s_y" : 10, "f_x" : 100, "f_y" : 100 }
+        },
+        "close": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 50, "f_x" : 90, "f_y" : 100 }
+        },
+        "return": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 0, "s_y" : 70, "f_x" : 40, "f_y" : 100 }
+        },
+        "daily": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 0, "s_y" : 10, "f_x" : 40, "f_y" : 70 },
+
+            "focus": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 0, "s_y" : 10, "f_x" : 40, "f_y" : 70 }
+            },
+            "id": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 15, "s_y" : 20, "f_x" : 100, "f_y" : 100 }
+            }
+        },
+        "weekly": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 0, "s_y" : 10, "f_x" : 40, "f_y" : 90 },
+
+            "focus": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 0, "s_y" : 10, "f_x" : 40, "f_y" : 90 }
+            },
+            "id": {
+                "name" : "*.png",
+                "bounds" : { "s_x" : 15, "s_y" : 20, "f_x" : 100, "f_y" : 100 }
+            }
+        }
+    },
+
+    "exercises": {
+        "name" : "*.png",
+        "bounds" : { "s_x" : 20, "s_y" : 20, "f_x" : 80, "f_y" : 80 },
+
+        "select": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 10, "f_x" : 50, "f_y" : 50 }
+        },
+        "win": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 0, "s_y" : 0, "f_x" : 100, "f_y" : 100 }
+        },
+        "lose": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 0, "s_y" : 0, "f_x" : 100, "f_y" : 100 }
+        },
+        "x": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 70, "s_y" : 0, "f_x" : 100, "f_y" : 40 }
+        },
+        "decide": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 70, "f_x" : 80, "f_y" : 100 }
+        },
+        "unable": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 70, "f_x" : 90, "f_y" : 100 }
+        },
+        "return": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 10, "f_x" : 50, "f_y" : 50 }
+        },
+        "start": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 70, "f_x" : 90, "f_y" : 100 }
+        }
+    },
+
+    "docking": {
+        "select": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 10, "s_y" : 10, "f_x" : 70, "f_y" : 50 }
+        },
+        "room": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 20, "s_y" : 10, "f_x" : 80, "f_y" : 90 }
+        },
+        "next": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 30, "s_y" : 50, "f_x" : 100, "f_y" : 100 }
+        },
+        "unable": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 50, "s_y" : 50, "f_x" : 100, "f_y" : 100 }
+        },
+        "start": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 50, "s_y" : 50, "f_x" : 100, "f_y" : 100 }
+        },
+        "time": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 60, "s_y" : 30, "f_x" : 100, "f_y" : 70 }
+        },
+        "bucket": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 60, "s_y" : 30, "f_x" : 100, "f_y" : 70 }
+        },
+        "yes": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 20, "s_y" : 20, "f_x" : 100, "f_y" : 100 }
+        },
+        "no": {
+            "name" : "*.png",
+            "bounds" : { "s_x" : 20, "s_y" : 20, "f_x" : 100, "f_y" : 100 }
+        }
+    }
+}

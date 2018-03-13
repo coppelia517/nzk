@@ -1,0 +1,8 @@
+{
+    "formation": {
+        "fleet_name": {
+            "name": "First Fleet",
+            "bounds": {"s_x": 815, "s_y": 150, "f_x": 1050, "f_y": 190 }
+        }
+    }
+}

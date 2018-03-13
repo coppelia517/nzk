@@ -16,8 +16,7 @@ class TestCase_Normal(testcase.TestCase_Base):
         super(TestCase_Normal, self).__init__(*args, **kwargs)
 
     def arg_parse(self, parser):
-        super(TestCase_Normal, self).arg_parser(parser)
-        parser.add_argument("-c", "--config", action='store', dest="config", help="Config File Name.")
+        super(TestCase_Normal, self).arg_parse(parser)
         parser.add_argument("-i", "--slack", action='store', dest="slack", help="Slack Serial.")
 
         parser.add_argument("-e", "--expedition", action='store', dest="expedition", help="Expedition ID.")
@@ -26,13 +25,74 @@ class TestCase_Normal(testcase.TestCase_Base):
 
     def tap_check(self, location, _id=None, area=None, wait=True, timeout=5):
         if wait:
-            if not self.wait(location, _id, area, threshold=10, loop=TIMEOUT_LOOP):
+            if not self.wait(location, _id, area, threshold=10, _timeout=TIMEOUT_LOOP):
                 L.warning("Can't Find Target : %s" % location)
         for _ in range(timeout):
             if self.tap(location, _id, area, False):
                 self.sleep(2)
                 if not self.exists(location, _id, area): return True
         return False
+
+    def debug(self):
+        return self.get("args.debug")
+
+    def message(self, msg, channel=None):
+        if self.debug(): pass
+        else:
+            if channel == None: channel = self.get("slack.channel")
+            try:
+                self.slack.message(msg, channel)
+            except SlackError as e:
+                L.warning(str(e))
+                raise e
+
+    def upload(self, filename=None, size="360P", channel=None):
+        if self.debug(): pass
+        else:
+            self.__upload(self.__capture(filename, size))
+
+    def capture(self, filename=None, size="360P"):
+        return self.__capture(filename, size)
+
+    def upload_file(self, fname, channel=None):
+        self.__upload(fname, channel)
+
+    def __capture(self, filename=None, size="360P"):
+        if filename == None: filename = self.adb.get().TMP_PICTURE
+        fname = self.minicap_screenshot(filename)
+        if self.adb.get().LOCATE == "V": self._rotate(fname, "90")
+        self._resize(fname, size)
+        return fname
+
+    def __upload(self, fname, channel=None):
+        if self.debug(): pass
+        else:
+            if channel == None: channel = self.get("slack.channel")
+            try:
+                assert os.path.exists(fname)
+                self.slack.upload(fname, channel, filetype="image/png")
+            except SlackError as e:
+                L.warning(str(e))
+                raise e
+
+    def _rotate(self, filepath, rotate, rename=""):
+        try:
+            pic = self.pic.open(filepath)
+            rotate_pic = self.pic.rotate(pic, rotate)
+            if rename == "": rename = filepath
+            return self.pic.save(rotate_pic, rename)
+        except Exception as e:
+            L.warning(e)
+
+    def _resize(self, filepath, resize, rename=""):
+        try:
+            pic = self.pic.open(filepath)
+            resize_pic = self.pic.resize(pic, resize)
+            if rename == "": rename = filepath
+            return self.pic.save(resize_pic, rename)
+        except Exception as e:
+            L.warning(e)
+
 
     def home(self):
         self.tap_check("menu/home"); self.sleep()
@@ -61,18 +121,18 @@ class TestCase_Normal(testcase.TestCase_Base):
         else:
             return False
 
-    def initialize(self, form=None):
+    def initialize(self, form=None, fleet_name=None):
         if self.adb.rotate() == 0 or (not self.exists("basic/home")):
             assert self.login()
             while self.expedition_result(): self.sleep(1)
             #return self.wait("basic/home")
-        self.tap_check("home/formation"); self.sleep(3)
+        self.tap_check("home/formation")
         self.message(self.get("bot.formation"))
         if form == None: return self.home()
-        else: return self.formation(form)
+        else: return self.formation(form, fleet_name)
 
-    def formation(self, formation):
-        self.tap("formation/change"); self.sleep()
+    def formation(self, formation, fleet_name=None):
+        self.tap_check("formation/change")
         if not self.exists("formation/deploy"): return False
         if formation == None: return False
         fleet = int(formation)
@@ -88,9 +148,15 @@ class TestCase_Normal(testcase.TestCase_Base):
                       self.conversion_h(int(self.adb.get().FORMATION_HEIGHT)))
         L.info(p);
         if not self.exists("formation/fleet_1_focus"):
-            self.tap_check("formation/fleet_1"); self.sleep()
-        self.tap_check("formation/select", area=p); self.sleep()
-        assert self.exists("formation/fleet_name"); self.sleep()
+            self.tap_check("formation/fleet_1")
+        self.tap_check("formation/select", area=p)
+        assert self.exists("formation/fleet_name")
+        if fleet_name != None:
+            try:
+                assert self.search_ocr("formation/fleet_name", fleet_name)
+            except Exception as e:
+                L.warning(str(e))
+                return not self.home()
         self.upload("formation_%s.png" % self.adb.get().SERIAL)
         return self.home()
 

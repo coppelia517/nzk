@@ -1,0 +1,9 @@
+{
+    "name" : "expedition_%s_*.png",
+    "bounds" : {
+        "s_x" : 15,
+        "s_y" : 25,
+        "f_x" : 70,
+        "f_y" : 100
+    }
+}
