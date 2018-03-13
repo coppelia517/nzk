@@ -3,12 +3,36 @@ import sys
 import time
 import pytest
 
-from grog.utility import *
-from grog.utility import LOG as L
-from grog.script.kancolle import testcase
+from stve.log import Log
+
+from aliez.utility import *
+from aliez.script import testcase
+
+L = Log.get(__name__)
 
 
 class TestCase_Normal(testcase.TestCase_Base):
+    def __init__(self, *args, **kwargs):
+        super(TestCase_Normal, self).__init__(*args, **kwargs)
+
+    def arg_parse(self, parser):
+        super(TestCase_Normal, self).arg_parser(parser)
+        parser.add_argument("-c", "--config", action='store', dest="config", help="Config File Name.")
+        parser.add_argument("-i", "--slack", action='store', dest="slack", help="Slack Serial.")
+
+        parser.add_argument("-e", "--expedition", action='store', dest="expedition", help="Expedition ID.")
+        parser.add_argument("-f", "--fleet", action='store', dest="fleet", help="Fleet Number.")
+        return parser
+
+    def tap_check(self, location, _id=None, area=None, wait=True, timeout=5):
+        if wait:
+            if not self.wait(location, _id, area, threshold=10, loop=TIMEOUT_LOOP):
+                L.warning("Can't Find Target : %s" % location)
+        for _ in range(timeout):
+            if self.tap(location, _id, area, False):
+                self.sleep(2)
+                if not self.exists(location, _id, area): return True
+        return False
 
     def home(self):
         self.tap_check("menu/home"); self.sleep()
