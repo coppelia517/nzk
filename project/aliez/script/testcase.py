@@ -79,6 +79,9 @@ class TestCase_Base(testcase_base.TestCase_Unit):
     def debug(self):
         return self.get("args.debug")
 
+    def get_cv(self, target):
+        return self.__get_cv(target)
+
     def __get_cv(self, target):
         try:
             if self.get("args.package") == None: return "cv://%s" % target
