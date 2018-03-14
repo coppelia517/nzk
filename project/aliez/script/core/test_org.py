@@ -37,7 +37,7 @@ class TestCase(testcase.TestCase_Base):
                 x = str(int(self.adb.get().WIDTH) / 2)
                 self.adb.input("swipe %s %s %s %s" % (x, self.adb.get().HEIGHT, x, "0")); self.sleep()
 
-            assert self.search_ocr("settings/device_info/build_number")
+            assert self.text("settings/device_info/build_number")
             self.minicap_screenshot("result.png")
             self.minicap_finish(); self.sleep(3)
 

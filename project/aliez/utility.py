@@ -24,9 +24,12 @@ def desc(string, L, cr=True):
     L.info(string)
 
 DEBUG = True
+TAP_THRESHOLD=0.2
+TIMEOUT=5
+WAIT_TIMEOUT=60
+
 TIMEOUT_COUNT=10
 TIMEOUT_LOOP=30
-TAP_THRESHOLD=0.2
 
 class POINT(object):
     def __init__(self, x, y, width, height):
