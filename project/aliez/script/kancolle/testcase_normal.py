@@ -6,148 +6,15 @@ import pytest
 from stve.log import Log
 
 from aliez.utility import *
-from aliez.script import testcase
 from aliez.resource import Parser as P
+from aliez.script.kancolle import testcase_base
 
 L = Log.get(__name__)
 
 
-class TestCase_Normal(testcase.TestCase_Base):
+class TestCase_Normal(testcase_base.TestCase_Basic):
     def __init__(self, *args, **kwargs):
         super(TestCase_Normal, self).__init__(*args, **kwargs)
-
-    def arg_parse(self, parser):
-        super(TestCase_Normal, self).arg_parse(parser)
-        parser.add_argument("-i", "--slack", action='store', dest="slack", help="Slack Serial.")
-
-        parser.add_argument("-e", "--expedition", action='store', dest="expedition", help="Expedition ID.")
-        parser.add_argument("-f", "--fleet", action='store', dest="fleet", help="Fleet Number.")
-        return parser
-
-    def tap_check(self, location, _id=None, area=None, wait=True, timeout=5):
-        if wait:
-            if not self.wait(location, _id, area, threshold=10, _timeout=TIMEOUT_LOOP):
-                L.warning("Can't Find Target : %s" % location)
-        for _ in range(timeout):
-            if self.tap(location, _id, area, False):
-                self.sleep(2)
-                if not self.exists(location, _id, area): return True
-        return False
-
-    def debug(self):
-        return self.get("args.debug")
-
-    def message(self, msg, channel=None):
-        if self.debug(): pass
-        else:
-            if channel == None: channel = self.get("slack.channel")
-            try:
-                self.slack.message(msg, channel)
-            except SlackError as e:
-                L.warning(str(e))
-                raise e
-
-    def upload(self, filename=None, size="360P", channel=None):
-        if self.debug(): pass
-        else:
-            self.__upload(self.__capture(filename, size))
-
-    def capture(self, filename=None, size="360P"):
-        return self.__capture(filename, size)
-
-    def upload_file(self, fname, channel=None):
-        self.__upload(fname, channel)
-
-    def __capture(self, filename=None, size="360P"):
-        if filename == None: filename = self.adb.get().TMP_PICTURE
-        fname = self.minicap_screenshot(filename)
-        if self.adb.get().LOCATE == "V": self._rotate(fname, "90")
-        self._resize(fname, size)
-        return fname
-
-    def __upload(self, fname, channel=None):
-        if self.debug(): pass
-        else:
-            if channel == None: channel = self.get("slack.channel")
-            try:
-                assert os.path.exists(fname)
-                self.slack.upload(fname, channel, filetype="image/png")
-            except SlackError as e:
-                L.warning(str(e))
-                raise e
-
-    def _rotate(self, filepath, rotate, rename=""):
-        try:
-            pic = self.pic.open(filepath)
-            rotate_pic = self.pic.rotate(pic, rotate)
-            if rename == "": rename = filepath
-            return self.pic.save(rotate_pic, rename)
-        except Exception as e:
-            L.warning(e)
-
-    def _resize(self, filepath, resize, rename=""):
-        try:
-            pic = self.pic.open(filepath)
-            resize_pic = self.pic.resize(pic, resize)
-            if rename == "": rename = filepath
-            return self.pic.save(resize_pic, rename)
-        except Exception as e:
-            L.warning(e)
-
-    def invoke_job(self, job, token, timeout=300):
-        L.info("Call %s : %s" % (job, self.jenkins.invoke_job(job, token, timeout)))
-
-    def invoke_quest_job(self, _id, timeout=None):
-        job = self.get("%s.jenkins" % _id)
-        if timeout == None:
-            timeout = int(self.get("%s.timeout" % _id))
-        params = {
-            'token': self.get("jenkins.token"),
-            'android_id': self.get("args.serial"),
-            'slack_id': self.get("args.slack"),
-            'delay': "%dsec" % timeout
-        }
-        L.info("Call %s : %s" % (job, self.jenkins.invoke_job_with_params(job, params)))
-
-    def call_job_tree(self, _id, timeout=60):
-        if _id == "DB01":
-            self.invoke_quest_job("DB02", timeout)
-        elif _id == "DB02":
-            self.invoke_quest_job("DB03", timeout); self.invoke_quest_job("DB04", timeout)
-            self.invoke_quest_job("WB01", timeout); self.invoke_quest_job("WB02", timeout)
-        elif _id == "DB04":
-            self.invoke_quest_job("DB05", timeout); self.invoke_quest_job("WB03", timeout)
-        elif _id == "DB05":
-            self.invoke_quest_job("DB06", timeout)
-        elif _id == "WB01":
-            self.invoke_quest_job("WB04", timeout)
-        elif _id == "WB03":
-            self.invoke_quest_job("WB05", timeout)
-        elif _id == "WB04":
-            self.invoke_quest_job("WB06", timeout)
-        else:
-            L.info("Not Call.")
-
-    def __validate_quest(self, location, _id, area=None):
-        path, name, bounds = P.search(self.get_cv(location), _id)
-        if path == None:
-            raise ResourceError("Can't found Resource File. %s" % location)
-        if self.adb.get().ROTATE == "0":
-            w = int(self.adb.get().MINICAP_HEIGHT)
-            h = int(self.adb.get().MINICAP_WIDTH)
-        else:
-            w = int(self.adb.get().MINICAP_WIDTH)
-            h = int(self.adb.get().MINICAP_HEIGHT)
-        if area == None: area = self.__area(w, h, bounds)
-        L.info("Search : cv://%s" % (location))
-        return path, name, area
-
-    def match_quest(self, location, _id, area=None, threshold=5):
-        path, name, area = self.__validate_quest(location, _id, area)
-        for f in glob.glob(os.path.join(path,name)):
-            result = self.minicap.search_pattern(os.path.join(os.path.join(path, f)), area, threshold)
-            if result != None: return result
-        return None
 
     def home(self):
         self.tap_check("menu/home"); self.sleep(base=5)
@@ -208,7 +75,7 @@ class TestCase_Normal(testcase.TestCase_Base):
         assert self.exists("formation/fleet_name")
         if fleet_name != None:
             try:
-                assert self.search_ocr("formation/fleet_name", fleet_name)
+                assert self.text("formation/fleet_name", fleet_name)
             except Exception as e:
                 L.warning(str(e))
                 return not self.home()

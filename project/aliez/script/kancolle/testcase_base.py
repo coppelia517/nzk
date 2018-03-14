@@ -1,5 +1,6 @@
 import os
 import sys
+import glob
 import pytest
 
 from stve.log import Log
@@ -83,12 +84,54 @@ class TestCase_Basic(testcase.TestCase_Base):
         except Exception as e:
             L.warning(e)
 
-    def tap_check(self, location, _id=None, area=None, wait=True, timeout=5):
+    def tap_check(self, location, _id=None, area=None, threshold=TAP_THRESHOLD, timeout=TIMEOUT, wait=True, _wait=WAIT_TIMEOUT):
         if wait:
-            if not self.wait(location, _id, area, threshold=10, _timeout=TIMEOUT_LOOP):
+            if not self.wait(location, _id, area, timeout, _wait):
                 L.warning("Can't Find Target : %s" % location)
         for _ in range(timeout):
             if self.tap(location, _id, area, False):
                 self.sleep(2)
                 if not self.exists(location, _id, area): return True
         return False
+
+    def match_quest(self, location, _num, area=None, timeout=TIMEOUT):
+        path, name, area = self.validate(location, None, area, _num)
+        for f in glob.glob(os.path.join(path,name)):
+            result = self.minicap.search_pattern(
+                os.path.join(os.path.join(path, f)), area, timeout)
+            if result != None: return result
+        return None
+
+    def invoke_job(self, job, token, timeout=300):
+        L.info("Call %s : %s" % (job, self.jenkins.invoke_job(job, token, timeout)))
+
+    def invoke_quest_job(self, _id, timeout=None):
+        job = self.get("%s.jenkins" % _id)
+        if timeout == None:
+            timeout = int(self.get("%s.timeout" % _id))
+        params = {
+            'token': self.get("jenkins.token"),
+            'android_id': self.get("args.serial"),
+            'slack_id': self.get("args.slack"),
+            'delay': "%dsec" % timeout
+        }
+        L.info("Call %s : %s" % (job, self.jenkins.invoke_job_with_params(job, params)))
+
+    def call_job_tree(self, _id, timeout=60):
+        if _id == "DB01":
+            self.invoke_quest_job("DB02", timeout)
+        elif _id == "DB02":
+            self.invoke_quest_job("DB03", timeout); self.invoke_quest_job("DB04", timeout)
+            self.invoke_quest_job("WB01", timeout); self.invoke_quest_job("WB02", timeout)
+        elif _id == "DB04":
+            self.invoke_quest_job("DB05", timeout); self.invoke_quest_job("WB03", timeout)
+        elif _id == "DB05":
+            self.invoke_quest_job("DB06", timeout)
+        elif _id == "WB01":
+            self.invoke_quest_job("WB04", timeout)
+        elif _id == "WB03":
+            self.invoke_quest_job("WB05", timeout)
+        elif _id == "WB04":
+            self.invoke_quest_job("WB06", timeout)
+        else:
+            L.info("Not Call.")

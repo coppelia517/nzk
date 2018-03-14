@@ -95,21 +95,21 @@ class TestCase(testcase_normal.TestCase_Normal):
 
     def quest_check(self, target, crop_target, _id, threshold=0.2, count=5):
         box_result = self.match_quest(
-            crop_target, _id, area=None, threshold=count)
+            crop_target, _id, area=None, timeout=count)
         L.info(box_result)
         if box_result == None: return False
         result = self.match(
-            target, _id=None, area=box_result, multiple=False, threshold=count)
+            target, _id=None, area=box_result, timeout=count, multiple=False)
         if result == None:
             self._tap(box_result, threshold); self.sleep()
         return True
 
     def quest_remove(self, target, crop_target, _id, threshold=0.2, count=5):
         box_result = self.match_quest(
-            crop_target, _id, area=None, threshold=count)
+            crop_target, _id, area=None, timeout=count)
         if box_result == None: return False
         result = self.match(
-            target, _id=None, area=box_result, multiple=False, threshold=count)
+            target, _id=None, area=box_result, timeout=count, multiple=False)
         if result != None:
             self._tap(box_result, threshold); self.sleep()
         return True

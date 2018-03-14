@@ -89,7 +89,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
             L.warning(e);
             raise ResourceError("Can't found Resource File. %s" % str(e))
 
-    def __validate(self, location, _id=None, area=None, _num=None, func="cv"):
+    def validate(self, location, _id=None, area=None, _num=None, func="cv"):
         path, name, bounds = P.search(self.__get_path(location, func), _num)
         if _id != None: name = name % str(_id)
         if path == None:
@@ -126,14 +126,14 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         return POINT(x, y, width, height)
 
     def text(self, location, text=None, area=None, timeout=TIMEOUT):
-        path, name, area = self.__validate(location, None, area, func="ocr")
+        path, name, area = self.validate(location, None, area, func="ocr")
         if text != None: name = text
         result = self.minicap.search_ocr(area, _timeout=timeout)
         L.info("target : %s <-> %s : reference" % (result, name))
         return result == name
 
     def exists(self, location, _id=None, area=None, timeout=TIMEOUT):
-        path, name, area = self.__validate(location, _id, area, func="cv")
+        path, name, area = self.validate(location, _id, area, func="cv")
         for f in glob.glob(os.path.join(path, name)):
             L.debug("File : %s - %s" % (location, os.path.basename(f)))
             result = self.minicap.search_pattern(
@@ -142,7 +142,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         return False
 
     def match(self, location, _id=None, area=None, timeout=TIMEOUT, multiple=False):
-        path, name, area = self.__validate(location, _id, area, func="cv")
+        path, name, area = self.validate(location, _id, area, func="cv")
         if multiple:
             res = []
             for f in glob.glob(os.path.join(path,name)):
