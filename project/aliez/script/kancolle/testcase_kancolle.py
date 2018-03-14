@@ -116,7 +116,9 @@ class TestCase(testcase_normal.TestCase_Normal):
 
     def quest_open(self):
         if not self.exists("basic/home"): return False
-        self.tap_check("home/quest"); self.sleep(base=4)
+        self.tap("home/quest"); self.sleep(base=4)
+        while not self.exists("quest"):
+            self.tap("home/quest"); self.sleep(base=4)
         assert self.exists("quest")
         self.message(self.get("bot.quest"))
         self.tap("quest"); self.sleep()

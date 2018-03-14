@@ -129,7 +129,7 @@ class TestCase_Normal(testcase.TestCase_Base):
             L.info("Not Call.")
 
     def __validate_quest(self, location, _id, area=None):
-        path, name, bounds = P.search(self.__get_cv(location), _id)
+        path, name, bounds = P.search(self.get_cv(location), _id)
         if path == None:
             raise ResourceError("Can't found Resource File. %s" % location)
         if self.adb.get().ROTATE == "0":
@@ -150,7 +150,7 @@ class TestCase_Normal(testcase.TestCase_Base):
         return None
 
     def home(self):
-        self.tap_check("menu/home"); self.sleep()
+        self.tap_check("menu/home"); self.sleep(base=5)
         return self.wait("basic/home")
 
     def login(self):
