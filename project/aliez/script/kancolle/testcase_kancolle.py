@@ -40,7 +40,7 @@ class TestCase(testcase_normal.TestCase_Normal):
             self.expedition_stage(id)
             self.expedition_id(id); self.sleep()
             if not self.exists("expedition/done"):
-                self.tap("expedition/decide"); self.sleep(4)
+                self.tap_check("expedition/decide"); self.sleep(4)
                 if not self.exists("expedition/fleet_focus", _id=fleet):
                     self.tap("expedition/fleet", _id=fleet); self.sleep()
                 if not self.exists("expedition/unable"):
@@ -121,7 +121,7 @@ class TestCase(testcase_normal.TestCase_Normal):
             self.tap("home/quest"); self.sleep(base=4)
         assert self.exists("quest")
         self.message(self.get("bot.quest"))
-        self.tap("quest"); self.sleep()
+        self.tap_check("quest"); self.sleep()
         self.quest_done(); self.sleep()
         if not self.exists("quest/mission"):
             self.tap("quest/return"); self.sleep()

@@ -264,7 +264,12 @@
 
         "stage": {
             "name" : "stage_%s_*.png",
-            "bounds" : { "s_x" : 10, "s_y" : 80, "f_x" : 70, "f_y" : 100 }
+            "bounds" : { "s_x" : 10, "s_y" : 80, "f_x" : 70, "f_y" : 100 },
+            
+            "focus": {
+                "name" : "stage_%s_*.png",
+                "bounds" : { "s_x" : 10, "s_y" : 80, "f_x" : 70, "f_y" : 100 }
+            }
         },
         "id": {
             "name" : "expedition_%s_*.png",

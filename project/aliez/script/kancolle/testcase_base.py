@@ -89,8 +89,8 @@ class TestCase_Basic(testcase.TestCase_Base):
             if not self.wait(location, _id, area, timeout, _wait):
                 L.warning("Can't Find Target : %s" % location)
         for _ in range(timeout):
-            if self.tap(location, _id, area, False):
-                self.sleep(2)
+            if self.tap(location, _id, area, wait=True):
+                self.sleep()
                 if not self.exists(location, _id, area): return True
         return False
 

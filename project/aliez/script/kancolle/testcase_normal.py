@@ -129,11 +129,21 @@ class TestCase_Normal(testcase_base.TestCase_Basic):
             self.home(); return False
 
     def expedition_stage(self, id):
-        if int(id) > 32: self.tap("expedition/stage", _id="5")
-        elif int(id) > 24: self.tap("expedition/stage", _id="4")
-        elif int(id) > 16: self.tap("expedition/stage", _id="3")
-        elif int(id) > 8: self.tap("expedition/stage", _id="2")
-        else: self.tap("expedition/stage", _id="1")
+        if int(id) > 32:
+            if not self.exists("expedition/stage/focus", _id="5"):
+                self.tap("expedition/stage", _id="5")
+        elif int(id) > 24:
+            if not self.exists("expedition/stage/focus", _id="4"):
+                self.tap("expedition/stage", _id="4")
+        elif int(id) > 16:
+            if not self.exists("expedition/stage/focus", _id="3"):
+                self.tap("expedition/stage", _id="3")
+        elif int(id) > 8:
+            if not self.exists("expedition/stage/focus", _id="2"):
+                self.tap("expedition/stage", _id="2")
+        else:
+            if not self.exists("expedition/stage/focus", _id="1"):
+                self.tap("expedition/stage", _id="1")
 
     def expedition_id(self, id):
         self.tap("expedition/id", _id=id)
