@@ -182,6 +182,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
             L.debug("Elapsed Time : %s" % str(time.time() - start))
 
     def tap(self, location, _id=None, area=None, threshold=TAP_THRESHOLD, timeout=TIMEOUT, wait=True, _wait=WAIT_TIMEOUT):
+        L.info("Tap : %s %s %s %s %s" % (location, _id, area, wait, timeout) )
         if wait:
             if not self.wait(location, _id, area, timeout, _wait):
                 L.warning("Can't Find Target : %s" % location)

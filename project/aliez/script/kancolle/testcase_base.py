@@ -85,6 +85,7 @@ class TestCase_Basic(testcase.TestCase_Base):
             L.warning(e)
 
     def tap_check(self, location, _id=None, area=None, threshold=TAP_THRESHOLD, timeout=TIMEOUT, wait=True, _wait=WAIT_TIMEOUT):
+        L.info("Tap Check : %s " % (location) )
         if wait:
             if not self.wait(location, _id, area, timeout, _wait):
                 L.warning("Can't Find Target : %s" % location)
