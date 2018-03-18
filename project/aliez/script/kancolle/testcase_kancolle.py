@@ -23,9 +23,9 @@ class TestCase(testcase_normal.TestCase_Normal):
         self.tap_check("home/supply"); self.sleep()
         for fleet in range(2, 5):
             if not self.exists(self.fleet_focus(fleet)):
-                self.tap_check(self.fleet(fleet)); self.sleep()
+                self.tap_check(self.fleet(fleet))
             if self.exists("supply/vacant"):
-                self.tap("supply"); self.sleep(4)
+                self.tap("supply"); self.sleep(2)
         return self.home()
 
     def expedition_all(self):
@@ -133,10 +133,12 @@ class TestCase(testcase_normal.TestCase_Normal):
         q_path, _id = self.quest_search_id(_id)
         if "daily" in q_path:
             if not self.exists("quest/daily/focus"):
-                self.tap_check("quest/daily"); self.sleep()
+                while not self.exists("quest/daily/focus"):
+                    self.tap("quest/daily"); self.sleep()
         elif "weekly" in q_path:
             if not self.exists("quest/weekly/focus"):
-                self.tap_check("quest/weekly"); self.sleep()
+                while not self.exists("quest/weekly/focus"):
+                    self.tap("quest/weekly"); self.sleep()
         if remove:
             if not self.quest_remove("quest/acceptance", q_path, _id):
                 return False

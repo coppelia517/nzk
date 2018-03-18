@@ -186,6 +186,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         if wait:
             if not self.wait(location, _id, area, timeout, _wait):
                 L.warning("Can't Find Target : %s" % location)
+            self.sleep(4)
         result = self.match(location, _id, area)
         if result != None:
             self._tap(result, threshold)
