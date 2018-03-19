@@ -17,12 +17,5 @@
         "**/tmp/*.png": true,
         "**/tmp/evidence": true,
         "**/tmp/video": true
-    },
-
-    "editor.fontFamily": "Consolas, Menlo, Monaco, 'Courier New', monospace",
-    
-    "workbench.iconTheme":"file-icons",
-    "workbench.colorTheme":"Base16 Tomorrow Dark",
-    
-    "terminal.integrated.shell.windows": "C:\\Program Files\\Git\\bin\\bash.exe"
+    }
 }

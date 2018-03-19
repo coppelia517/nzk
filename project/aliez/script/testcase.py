@@ -140,7 +140,9 @@ class TestCase_Base(testcase_base.TestCase_Unit):
             L.debug("File : %s - %s" % (location, os.path.basename(f)))
             result = self.minicap.search_pattern(
                 os.path.join(os.path.join(path, f)), area, timeout)
-            if result != None: return True
+            if result != None: 
+                L.debug("Exists : Location %s/%s, %s." % (location, os.path.basename(f), result))
+                return True
         return False
 
     def match(self, location, _id=None, area=None, timeout=TIMEOUT, multiple=False):
@@ -163,8 +165,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
     def __wait_loop(self, location, _id=None, area=None, timeout=TIMEOUT):
         while self._wait_loop_flag:
             if self.exists(location, _id, area, timeout):
-                self.wait_queue.put(True)
-            self.sleep()
+                self.wait_queue.put(True); break
         #L.info("Wait Loop Stop.")
 
     def wait(self, location, _id=None, area=None, timeout=TIMEOUT, _wait=WAIT_TIMEOUT):
@@ -174,7 +175,8 @@ class TestCase_Base(testcase_base.TestCase_Unit):
             start = time.time()
             self.wait_queue = Queue()
             self.loop = threading.Thread(
-                target=self.__wait_loop, args=(location, _id, area, timeout, )).start()
+                target=self.__wait_loop, args=(location, _id, area, timeout, ))
+            self.loop.start()
             result = self.wait_queue.get(timeout=_wait)
             if result != None:
                 return result
@@ -185,7 +187,8 @@ class TestCase_Base(testcase_base.TestCase_Unit):
             L.warning("Wait Timeout : %s" % str(e))
         finally:
             self._wait_loop_flag = False
-            L.debug("Elapsed Time : %s" % str(time.time() - start))
+            self.loop.join()
+            L.debug("Wait Loop End. Elapsed Time : %s" % str(time.time() - start))
 
     def tap(self, location, _id=None, area=None, threshold=TAP_THRESHOLD, timeout=TIMEOUT, wait=True, _wait=WAIT_TIMEOUT):
         L.debug("Tap : Location %s, ID %s, Area %s, Wait %s, Wait Timeout %s." % (location, _id, area, wait, timeout) )

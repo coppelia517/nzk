@@ -127,6 +127,7 @@ class MinicapProc(object):
         if self._debug: cv2.namedWindow("debug")
         while self._loop_flag:
             data = self.stream.picture.get()
+            save_flag = False
 
             image_pil = Image.open(io.BytesIO(data))
             image_cv = cv2.cvtColor(np.asarray(image_pil), cv2.COLOR_RGB2BGR)
@@ -141,14 +142,16 @@ class MinicapProc(object):
                     result, image_cv = self.pic.search_pattern(
                         image_cv, self._pattern_match.target, self._pattern_match.box, TMP_DIR)
                     self.patternmatch_result.put(result)
+                    save_flag = True
 
             if self._ocr != None:
                 if self.ocr != None:
                     result, image_cv = self.ocr.img_to_string(
                         image_cv, self._ocr.box, TMP_DIR)
                     self.ocr_result.put(result)
+                    save_flag = True
 
-            if self.counter % 5 == 0:
+            if self.counter % 5 == 0 or save_flag:
                 self.__save_evidence(self.counter / 5, image_cv)
 
             if self._debug:
@@ -166,9 +169,11 @@ class MinicapProc(object):
                 if key == 27: break
             self.counter += 1
 
+            """
             ret, jpeg = cv2.imencode('.jpg', image_cv)
             self.output.put(jpeg.tobytes())
             if self.get_d() > MAX_SIZE: self.output.get()
+            """
         if self._debug: cv2.destroyAllWindows()
 
 if __name__ == "__main__":

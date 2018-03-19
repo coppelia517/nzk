@@ -30,6 +30,10 @@ class TestRunner(object):
         self.log = self.workspace.mkdir("log")
         self.report = self.workspace.mkdir("report")
 
+        self.tmp_video = self.workspace.mkdir(os.path.join("tmp", "video"))
+        self.workspace.rmdir(os.path.join("tmp", "evidence"))
+        self.tmp_evidence = self.workspace.mkdir(os.path.join("tmp","evidence"))
+
     def load(self, testcase, host):
         if testcase.find(".py") != -1: script = testcase
         else: script = testcase + ".py"

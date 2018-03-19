@@ -191,3 +191,64 @@ class TestCase(testcase_normal.TestCase_Normal):
         self.quest_search("DX02", remove=True); self.sleep(1)
         self.quest_search("WX01", remove=True); self.sleep(1)
         return self.quest_upload()
+
+    def exercises(self):
+        if not self.exists("basic/home"): return False
+        self.tap_check("home/attack"); self.sleep()
+        self.tap("exercises"); self.sleep(4)
+        if not self.exists("exercises/select"):
+            self.home(); return False
+        p = POINT(self.conversion_w(int(self.adb.get().EXERCISES_X)),
+                  self.conversion_h(int(self.adb.get().EXERCISES_Y)),
+                  self.conversion_w(int(self.adb.get().EXERCISES_WIDTH)),
+                  self.conversion_h(int(self.adb.get().EXERCISES_HEIGHT)))
+        flag = True
+        for _ in range(5):
+            if self.exists("exercises/win", area=p):
+                L.info("I'm already fighting. I won.")
+            elif self.exists("exercises/lose", area=p):
+                L.info("I'm already fighting. I lost.")
+            else:
+                L.info(p);
+                self._tap(p, threshold=0.49); self.sleep(3)
+                fname = self.capture("exercises_%s.png" % self.adb.get().SERIAL)
+                if self.exists("exercises/x"):
+                    self.tap("exercises/decide"); self.sleep()
+                    if self.exists("exercises/unable"):
+                        self.tap_check("exercises/return"); self.sleep()
+                        self.tap_check("exercises/x"); self.sleep()
+                        self.home(); return False
+                    self.upload_file(fname)
+                    if self.tap_check("exercises/start"):
+                        self.message(self.get("bot.exercises_start")); self.sleep(5)
+                        self.exercises_battle(); flag = False
+                        break
+            self.sleep(1)
+            if self.adb.get().LOCATE == "V":
+                p.x = int(p.x) - int(p.width); L.info("Point : %s" % str(p))
+            else:
+                p.y = int(p.y) + int(p.height); L.info("Point : %s" % str(p))
+        if flag:
+            self.message(self.get("bot.exercises_result"))
+            self.upload()
+            self.home(); return False
+        self.sleep(3)
+        return self.wait("basic/home")
+
+    def exercises_battle(self):
+        self.tap("attack/formation/1")
+        while not self.exists("basic/next"):
+            self.sleep(15)
+            if self.tap("attack/night_battle/start", wait=False):
+                self.message(self.get("bot.night_battle_start"))
+                self.sleep()
+        self.sleep(2)
+        if self.exists("attack/result/d"): self.message(self.get("bot.result_d"))
+        elif self.exists("attack/result/c"): self.message(self.get("bot.result_c"))
+        elif self.exists("attack/result/b"): self.message(self.get("bot.result_b"))
+        elif self.exists("attack/result/a"): self.message(self.get("bot.result_a"))
+        else: self.message(self.get("bot.result_s"))
+        self.sleep(5)
+        while self.exists("basic/next"):
+            self.tap("basic/next"); self.sleep(5)
+        return True
