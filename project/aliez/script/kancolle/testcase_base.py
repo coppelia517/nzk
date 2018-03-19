@@ -88,10 +88,12 @@ class TestCase_Basic(testcase.TestCase_Base):
         L.info("Tap Check : %s " % (location) )
         for _ in range(timeout):
             if self.tap(location, _id, area, wait=wait):
-                if not self.exists(location, _id, area): return True
+                self.sleep()
+                if not self.exists(location, _id, area, timeout=10): return True
         return False
 
     def match_quest(self, location, _num, area=None, timeout=TIMEOUT):
+        L.info("Match Request : %s " % (location) )
         path, name, area = self.validate(location, None, area, _num)
         for f in glob.glob(os.path.join(path,name)):
             result = self.minicap.search_pattern(

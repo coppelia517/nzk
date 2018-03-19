@@ -126,6 +126,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         return POINT(x, y, width, height)
 
     def text(self, location, text=None, area=None, timeout=TIMEOUT):
+        L.debug("OCR Test Check: Location %s, Text %s, Area %s, Timeout %s." % (location, text, area, timeout))
         path, name, area = self.validate(location, None, area, func="ocr")
         if text != None: name = text
         result = self.minicap.search_ocr(area, _timeout=timeout)
@@ -133,6 +134,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         return result == name
 
     def exists(self, location, _id=None, area=None, timeout=TIMEOUT):
+        L.debug("Exists Check: Location %s, ID %s, Area %s, Timeout %s." % (location, _id, area, timeout))
         path, name, area = self.validate(location, _id, area, func="cv")
         for f in glob.glob(os.path.join(path, name)):
             L.debug("File : %s - %s" % (location, os.path.basename(f)))
@@ -142,6 +144,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         return False
 
     def match(self, location, _id=None, area=None, timeout=TIMEOUT, multiple=False):
+        L.debug("Match Check: Location %s, ID %s, Area %s, Timeout %s." % (location, _id, area, timeout))
         path, name, area = self.validate(location, _id, area, func="cv")
         if multiple:
             res = []
@@ -165,6 +168,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         #L.info("Wait Loop Stop.")
 
     def wait(self, location, _id=None, area=None, timeout=TIMEOUT, _wait=WAIT_TIMEOUT):
+        L.debug("Wait Start : %s / Timeout : %s" % (location, timeout))
         try:
             self._wait_loop_flag = True
             start = time.time()
@@ -177,16 +181,18 @@ class TestCase_Base(testcase_base.TestCase_Unit):
             else:
                 self.minicap_screenshot('wait_failed.png')
                 return False
+        except Exception as e:
+            L.warning("Wait Timeout : %s" % str(e))
         finally:
             self._wait_loop_flag = False
             L.debug("Elapsed Time : %s" % str(time.time() - start))
 
     def tap(self, location, _id=None, area=None, threshold=TAP_THRESHOLD, timeout=TIMEOUT, wait=True, _wait=WAIT_TIMEOUT):
-        L.info("Tap : %s %s %s %s %s" % (location, _id, area, wait, timeout) )
+        L.debug("Tap : Location %s, ID %s, Area %s, Wait %s, Wait Timeout %s." % (location, _id, area, wait, timeout) )
         if wait:
             if not self.wait(location, _id, area, timeout, _wait):
                 L.warning("Can't Find Target : %s" % location)
-            self.sleep(4)
+                return False
         result = self.match(location, _id, area)
         if result != None:
             self._tap(result, threshold)
