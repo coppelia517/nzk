@@ -17,7 +17,7 @@ class TestCase(testcase_kancolle.TestCase):
     def setUpClass(cls):
         info("*** Start TestCase   : %s *** " % __file__)
 
-    def test_expedition(self):
+    def test_exercises(self):
         try:
             self.minicap_start(); self.sleep()
 
