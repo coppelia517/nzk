@@ -147,3 +147,81 @@ class TestCase_Normal(testcase_base.TestCase_Basic):
 
     def expedition_id(self, id):
         self.tap("expedition/id", _id=id)
+
+    def attack(self, fleet, id):
+        if not self.exists("basic/home"): return False
+        self.tap_check("home/attack"); self.sleep()
+        assert self.exists("attack")
+        self.message(self.get("bot.attack"))
+        self.tap("attack"); self.sleep(4)
+        assert self.exists("attack/icon"); self.sleep(2)
+        self.__attack_stage(id)
+        self.__attack_extra(id)
+        self.__attack_id(id)
+        if not self.exists("attack/decide"):
+            self.home(); return False
+        self.tap_check("attack/decide"); self.sleep()
+        if not self.exists(self.fleet_focus(fleet)):
+            self.tap_check(self.fleet(fleet)); self.sleep(2)
+        if self.exists("attack/rack"):
+            self.message(self.get("bot.attack_rack")); self.home(); return True
+        if self.exists("attack/damage"):
+            self.message(self.get("bot.attack_damage")); self.home(); return True
+        return self.home()
+        """
+        if self.tap_check("attack/start"): self.sleep(7)
+        if self.exists("attack/unable"):
+            self.message(self.get("bot.attack_failed"))
+            self.home(); return False
+        self.message(self.get("bot.attack_success"))
+        return self.wait("attack/compass_b")
+        """
+
+    def __attack_stage(self, id):
+        if int(id) > 30: self.tap("attack/stage", _id="6"); self.sleep()
+        elif int(id) > 24: self.tap("attack/stage", _id="5"); self.sleep()
+        elif int(id) > 18: self.tap("attack/stage", _id="4"); self.sleep()
+        elif int(id) > 12: self.tap("attack/stage", _id="3"); self.sleep()
+        elif int(id) > 6: self.tap("attack/stage", _id="2"); self.sleep()
+        else: pass
+
+    def __attack_extra(self, id):
+        if id in ["5", "6", "11", "12", "17", "18"]:
+            self.tap("attack/extra"); self.sleep()
+
+
+    def __attack_id(self, id):
+        self.tap("attack/id", _id=id); self.sleep()
+
+    def battle_all_stage(self, formation, withdrawal=False):
+        if not self.exists("attack/compass_b"):
+            if self.exists("basic/home"): return True
+            else: return False
+        while not self.exists("basic/home"):
+            while not self.exists("basic/next"):
+                if self.tap("attack/compass", wait=False): self.sleep(10)
+                if self.tap("attack/formation/%s" % formation, wait=False): self.sleep(10)
+                if self.tap("attack/night_battle/start", wait=False): self.sleep(15)
+                #if self.exists("home"):
+                #    self.message(self.get("bot.attack_return"))
+                #    return self.exists("home")
+                if self.exists("attack/get"):
+                    self.tap("attack/return"); self.sleep(5)
+                    return self.exists("basic/home")
+                self.sleep(10)
+            if self.tap("basic/next", wait=False): self.sleep(5)
+            nextstage = "attack/charge"
+            if withdrawal or self.exists("attack/result_damage"):
+                nextstage = "attack/withdrawal"
+            while self.tap("basic/next", wait=False): self.sleep(5)
+            if self.exists("basic/home"): break
+            while not self.exists(nextstage):
+                if self.exists("basic/next"):
+                    self.upload("drop_%s.png" % self.adb.get().SERIAL)
+                    self.tap("basic/next"); self.sleep(5)
+                if self.exists("basic/home"):
+                    self.message(self.get("bot.attack_return"))
+                    return True
+            self.tap(nextstage); time.sleep(5)
+        self.message(self.get("bot.attack_return"))
+        return self.exists("basic/home")

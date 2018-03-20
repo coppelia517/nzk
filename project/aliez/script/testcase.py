@@ -1,5 +1,4 @@
 import os
-import sys
 import glob
 import time
 import random
@@ -9,8 +8,10 @@ from stve import PYTHON_VERSION
 from stve.log import Log
 from stve.exception import *
 
-if PYTHON_VERSION == 3: from queue import Queue
-else: from Queue import Queue
+if PYTHON_VERSION == 3:
+    from queue import Queue
+else:
+    from Queue import Queue
 
 from aliez.capture import MinicapProc
 from aliez.utility import *
@@ -36,7 +37,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
 
     @classmethod
     def get_service(cls):
-        if cls.get("args.package") != None:
+        if cls.get("args.package") is not None:
             prof = os.path.join(SCRIPT_DIR, cls.get("args.package"), "profile")
             cls.adb = cls.service["stve.android"].get(cls.get("args.serial"), prof)
         else:
@@ -91,8 +92,9 @@ class TestCase_Base(testcase_base.TestCase_Unit):
 
     def validate(self, location, _id=None, area=None, _num=None, func="cv"):
         path, name, bounds = P.search(self.__get_path(location, func), _num)
-        if _id != None: name = name % str(_id)
-        if path == None:
+        if _id is not None:
+            name = name % str(_id)
+        if path is None:
             raise ResourceError("Can't found Resource File. %s" % location)
         if self.adb.get().ROTATE == "0":
             w = int(self.adb.get().MINICAP_HEIGHT)
@@ -128,7 +130,8 @@ class TestCase_Base(testcase_base.TestCase_Unit):
     def text(self, location, text=None, area=None, timeout=TIMEOUT):
         L.debug("OCR Test Check: Location %s, Text %s, Area %s, Timeout %s." % (location, text, area, timeout))
         path, name, area = self.validate(location, None, area, func="ocr")
-        if text != None: name = text
+        if text is not None:
+            name = text
         result = self.minicap.search_ocr(area, _timeout=timeout)
         L.info("target : %s <-> %s : reference" % (result, name))
         return result == name
@@ -178,7 +181,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
                 target=self.__wait_loop, args=(location, _id, area, timeout, ))
             self.loop.start()
             result = self.wait_queue.get(timeout=_wait)
-            if result != None:
+            if result is not None:
                 return result
             else:
                 self.minicap_screenshot('wait_failed.png')
