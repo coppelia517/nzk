@@ -13,7 +13,8 @@ Pillow==5.0.0
 pluggy==0.6.0
 py==1.5.2
 pylint==1.8.3
-pytest==3.4.2
+pyocr==0.5.1
+pytest==3.4.1
 requests==2.18.4
 six==1.11.0
 slacker==0.9.60
