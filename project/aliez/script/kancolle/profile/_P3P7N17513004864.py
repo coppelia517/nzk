@@ -16,6 +16,8 @@ class _P3P7N17513004864(android_base.Android):
     NAME = "Huawei P10 lite"
     WIDTH = "1920"
     HEIGHT = "1080"
+    #MINICAP_WIDTH = "1920"
+    #MINICAP_HEIGHT = "1080"
     MINICAP_WIDTH = "1280"
     MINICAP_HEIGHT = "720"
     LOCATE = "H"
@@ -30,6 +32,11 @@ class _P3P7N17513004864(android_base.Android):
     FORMATION_Y = "375"
     FORMATION_WIDTH = "445"
     FORMATION_HEIGHT = "115"
+
+    LEVELING_X = "550"
+    LEVELING_Y = "560"
+    LEVELING_WIDTH = "260"
+    LEVELING_HEIGHT = "70"
 
     DOCKING_X = "800"
     DOCKING_Y = "228"

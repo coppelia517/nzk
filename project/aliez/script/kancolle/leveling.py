@@ -22,7 +22,8 @@ class TestCase(testcase_kancolle.TestCase):
             self.minicap_start(); self.sleep()
 
             info("*** Test SetUp. ***", cr=False)
-            assert self.initialize(self.get("leveling.composition"))
+            assert self.initialize(
+                self.get("leveling.composition"), fleet_name=self.get("leveling.fleet_name"))
 
             info("*** Quest Check. ***", cr=False)
             while self.expedition_result(): self.sleep()
@@ -30,7 +31,14 @@ class TestCase(testcase_kancolle.TestCase):
 
             info("*** select Attack Stage. 3-2 ***", cr=False)
             while self.expedition_result(): self.sleep()
-            assert self.attack(self.get("leveling.fleet"), self.get("leveling.stage"))
+            assert self.leveling(self.get("leveling.fleet"), self.get("leveling.stage"))
+
+            info("*** Attack Stage. 3-2 ***", cr=False)
+            assert self.battle_leveling(self.get("leveling.fleet"))
+
+            info("*** Supply & Docking Start. ***", cr=False)
+            while self.expedition_result(): self.sleep(1)
+            assert self.supply_and_docking(self.get("leveling.fleet"))
 
             info("*** Test TearDown. ***", cr=False)
             while self.expedition_result(): self.sleep()

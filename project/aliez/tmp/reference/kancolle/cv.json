@@ -2,7 +2,14 @@
     "attack": {
         "name" : "*.png",
         "bounds" : { "s_x" : 0, "s_y" : 20, "f_x" : 40, "f_y" : 80 },
-
+        
+        "status" : {
+            "leveling" : {
+                "name": "*.png",
+                "bounds": { "s_x": 0, "s_y": 0, "f_x": 100, "f_y": 100 }
+            }
+        },
+        
         "formation": {
             "1": {
                 "name" : "*.png",

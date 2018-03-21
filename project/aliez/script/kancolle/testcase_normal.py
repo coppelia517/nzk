@@ -148,7 +148,7 @@ class TestCase_Normal(testcase_base.TestCase_Basic):
     def expedition_id(self, id):
         self.tap("expedition/id", _id=id)
 
-    def attack(self, fleet, id):
+    def leveling(self, fleet, id):
         if not self.exists("basic/home"): return False
         self.tap_check("home/attack"); self.sleep()
         assert self.exists("attack")
@@ -167,15 +167,55 @@ class TestCase_Normal(testcase_base.TestCase_Basic):
             self.message(self.get("bot.attack_rack")); self.home(); return True
         if self.exists("attack/damage"):
             self.message(self.get("bot.attack_damage")); self.home(); return True
-        return self.home()
-        """
+        if not self.__leveling_status_check_leveling():
+            L.critical("Not Enough.")
+            return self.home()
         if self.tap_check("attack/start"): self.sleep(7)
         if self.exists("attack/unable"):
             self.message(self.get("bot.attack_failed"))
             self.home(); return False
         self.message(self.get("bot.attack_success"))
         return self.wait("attack/compass_b")
-        """
+
+    def battle_leveling(self, formation):
+        if not self.exists("attack/compass_b"):
+            if self.exists("basic/home"): return True
+            else: return False
+        while not self.exists("basic/home"):
+            while not self.exists("basic/next"):
+                if self.tap("attack/compass", wait=False): self.sleep(10)
+                if self.tap("attack/formation/%s" % formation, wait=False): self.sleep(10)
+                if self.tap("attack/night_battle/start", wait=False): self.sleep(15)
+                if self.exists("attack/get"):
+                    self.tap("attack/return"); self.sleep(5)
+                    return self.exists("basic/home")
+                self.sleep(10)
+            if self.tap("basic/next", wait=False):
+                self.sleep(5)
+            while self.tap("basic/next", wait=False):
+                self.sleep(5)
+            if self.exists("basic/home"):
+                break
+            while not self.exists("attack/withdrawal"):
+                if self.exists("basic/next"):
+                    self.upload("drop_%s.png" % self.adb.get().SERIAL)
+                    self.tap("basic/next"); self.sleep(5)
+                if self.exists("basic/home"):
+                    self.message(self.get("bot.attack_return"))
+                    return True
+            self.tap("attack/withdrawal"); time.sleep(5)
+        self.message(self.get("bot.attack_return"))
+        return self.exists("basic/home")
+
+    def __leveling_status_check_leveling(self):
+        p = POINT(int(self.adb.get().LEVELING_X),
+                    int(self.adb.get().LEVELING_Y),
+                    int(self.adb.get().LEVELING_WIDTH),
+                    int(self.adb.get().LEVELING_HEIGHT))
+        L.info(p)
+        #assert self.exists("attack/start")
+        return self.exists("attack/status/leveling", area=p)
+
 
     def __attack_stage(self, id):
         if int(id) > 30: self.tap("attack/stage", _id="6"); self.sleep()
@@ -192,6 +232,56 @@ class TestCase_Normal(testcase_base.TestCase_Basic):
 
     def __attack_id(self, id):
         self.tap("attack/id", _id=id); self.sleep()
+
+    def supply_and_docking(self, fleet):
+        #supply.
+        if not self.exists("basic/home"): return False
+        self.tap_check("home/supply"); self.sleep()
+        if not self.exists(self.fleet_focus(fleet)):
+            self.tap_check(self.fleet(fleet))
+        self.message(self.get("bot.supply") % fleet)
+        if self.exists("supply/vacant"):
+            self.tap("supply"); self.sleep()
+        # docking.
+        self.tap_check("basic/menu/docking")
+        self.wait("docking/select"); self.sleep()
+        self.message(self.get("bot.docking"))
+        for _ in range(3):
+            position = self.match("docking/room")
+            if position == None: break
+            self.tap_check("docking/room")
+            result = self.__docking()
+            self._tap(position, threshold=0.49); self.sleep()
+            if not result: break
+        self.sleep()
+        self.upload("docking_%s.png" % self.adb.get().SERIAL)
+        return self.home()
+
+    def __docking(self):
+        if not self.exists("docking/next"):
+            return False
+        p = POINT(self.conversion_w(int(self.adb.get().DOCKING_X)), 
+                  self.conversion_h(int(self.adb.get().DOCKING_Y)),
+                  self.conversion_w(int(self.adb.get().DOCKING_WIDTH)), 
+                  self.conversion_h(int(self.adb.get().DOCKING_HEIGHT)))
+        for po in range(7):
+            L.info(p);
+            self._tap(p, threshold=0.49); self.sleep()
+            if self.exists("docking/unable"):
+                self._tap(p, threshold=0.49); self.sleep()
+            elif self.exists("docking/start"):
+                if not self.exists("docking/time"):
+                    self.tap_check("docking/bucket")
+                self.tap_check("docking/start")
+                if self.tap_check("docking/yes"):
+                    return True
+            if self.adb.get().LOCATE == "V":
+                p.x = int(p.x) - int(p.width)
+                if int(p.x) < 0: return False
+            else:
+                p.y = int(p.y) + int(p.height)
+                if int(p.y) > int(self.adb.get().HEIGHT): return False
+        return False
 
     def battle_all_stage(self, formation, withdrawal=False):
         if not self.exists("attack/compass_b"):
