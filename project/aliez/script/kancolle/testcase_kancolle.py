@@ -251,4 +251,6 @@ class TestCase(testcase_normal.TestCase_Normal):
         self.sleep(5)
         while self.exists("basic/next"):
             self.tap("basic/next"); self.sleep(5)
+        while not self.exists("basic/home"):
+            self.tap("basic/next"); self.sleep(5)
         return True

@@ -1,18 +1,28 @@
+"""
+    hoge
+"""
 import os
 import sys
 import subprocess
+
+from stve.log import Log
 
 PATH = os.path.abspath(os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 if not PATH in sys.path:
     sys.path.insert(0, PATH)
 
-from stve.log import Log
-
 L = Log.get(__name__)
 
+
 class MinicapService(object):
+    """
+        hoge
+    """
     def __init__(self, name, log):
+        """
+            hoge
+        """
         APP_LOG = os.path.abspath(os.path.join(log, "bin"))
         if not os.path.exists(APP_LOG):
             os.mkdir(APP_LOG)
