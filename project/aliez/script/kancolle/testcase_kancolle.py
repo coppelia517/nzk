@@ -76,16 +76,10 @@ class TestCase(testcase_normal.TestCase_Normal):
         result = self.quest_search(_id)
         return result, self.quest_upload()
 
-    def quest_receipt(self, _ids, _remove=False):
+    def quest_receipts(self, _ids, _remove=False):
         assert self.quest_open()
         for _id in _ids:
             self.quest_search(_id, remove=_remove)
-        return self.quest_upload()
-
-    def quest_supply(self):
-        assert self.quest_open()
-        self.quest_search("DS01"); self.sleep(1)
-        self.quest_search("DS02"); self.sleep(1)
         return self.quest_upload()
 
     def exercises(self):

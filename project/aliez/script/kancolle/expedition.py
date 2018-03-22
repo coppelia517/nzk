@@ -31,7 +31,7 @@ class TestCase(testcase_kancolle.TestCase):
 
             info("*** Quest Check. ***", cr=False)
             while self.expedition_result(): self.sleep()
-            assert self.quest_receipt(["DP01", "DP02", "WP01", "WP02", "WP03"])
+            assert self.quest_receipts(["DP01", "DP02", "WP01", "WP02", "WP03"])
 
             info("*** Expedition Start. ***", cr=False)
             while self.expedition_result(): self.sleep()

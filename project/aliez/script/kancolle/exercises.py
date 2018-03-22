@@ -26,7 +26,7 @@ class TestCase(testcase_kancolle.TestCase):
 
             info("*** Quest Check. ***", cr=False)
             while self.expedition_result(): self.sleep()
-            assert self.quest_receipt(["DX01", "DX02", "WX01"])
+            assert self.quest_receipts(["DX01", "DX02", "WX01"])
 
             info("*** Exercises. ***", cr=False)
             while self.expedition_result(): self.sleep()
@@ -43,7 +43,7 @@ class TestCase(testcase_kancolle.TestCase):
 
         except Exception as e:
             while self.expedition_result(): self.sleep()
-            self.quest_receipt(["DX01", "DX02", "WX01"], _remove=True)
+            self.quest_receipts(["DX01", "DX02", "WX01"], _remove=True)
             while self.expedition_result(): self.sleep()
             self.minicap_finish(); self.sleep()
             L.warning(type(e).__name__ + ": " + str(e))

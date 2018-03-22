@@ -27,7 +27,7 @@ class TestCase(testcase_kancolle.TestCase):
 
             info("*** Quest Check. ***", cr=False)
             while self.expedition_result(): self.sleep()
-            assert self.quest_supply()
+            assert self.quest_receipts(["DS01", "DS02"])
 
             info("*** select Attack Stage. 3-2 ***", cr=False)
             while self.expedition_result(): self.sleep()
@@ -37,15 +37,13 @@ class TestCase(testcase_kancolle.TestCase):
             assert self.battle_leveling(self.get("leveling.fleet"))
 
             info("*** Supply & Docking Start. ***", cr=False)
-            while self.expedition_result(): self.sleep(1)
+            while self.expedition_result(): self.sleep()
             assert self.supply_and_docking(self.get("leveling.fleet"))
 
             info("*** Test TearDown. ***", cr=False)
             while self.expedition_result(): self.sleep()
 
-
             self.minicap_finish(); self.sleep()
-
         except Exception as e:
             self.minicap_finish(); self.sleep()
             L.warning(type(e).__name__ + ": " + str(e))
