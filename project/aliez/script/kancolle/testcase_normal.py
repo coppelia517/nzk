@@ -11,6 +11,12 @@ from aliez.script.kancolle import testcase_base
 
 L = Log.get(__name__)
 
+def find_all_files(directory):
+    for root, dirs, files in os.walk(directory):
+        yield root
+        for f in files:
+            yield os.path.join(root, f)
+
 
 class TestCase_Normal(testcase_base.TestCase_Basic):
     def __init__(self, *args, **kwargs):
@@ -31,7 +37,8 @@ class TestCase_Normal(testcase_base.TestCase_Basic):
     def expedition_result(self):
         if self.exists("basic/expedition"):
             self.tap_check("basic/expedition"); time.sleep(9)
-            if self.wait("basic/expedition/success"):
+            assert self.wait("basic/next")
+            if self.exists("basic/expedition/success"):
                 self.message(self.get("bot.expedition_success"))
             elif self.exists("basic/expedition/failed"):
                 self.message(self.get("bot.expedition_failed"))
@@ -42,16 +49,6 @@ class TestCase_Normal(testcase_base.TestCase_Basic):
             return self.exists("basic/expedition")
         else:
             return False
-
-    def initialize(self, form=None, fleet_name=None):
-        if self.adb.rotate() == 0 or (not self.exists("basic/home")):
-            assert self.login()
-            while self.expedition_result(): self.sleep(1)
-            #return self.wait("basic/home")
-        self.tap_check("home/formation")
-        self.message(self.get("bot.formation"))
-        if form == None: return self.home()
-        else: return self.formation(form, fleet_name)
 
     def formation(self, formation, fleet_name=None):
         self.tap_check("formation/change")
@@ -99,11 +96,14 @@ class TestCase_Normal(testcase_base.TestCase_Basic):
 
     def expedition(self, fleet, id):
         if not self.exists("basic/home"): return False
-        self.sleep(2)
         self.tap_check("home/attack"); self.sleep()
+        assert self.exists("expedition")
+        self.message(self.get("bot.expedition"))
         self.tap("expedition"); self.sleep(4)
+
         self.expedition_stage(id); self.sleep()
         self.expedition_id(id); self.sleep()
+
         if self.exists("expedition/done"):
             self.message(self.get("bot.expedition_done") % fleet)
             self.home(); return False
@@ -260,9 +260,9 @@ class TestCase_Normal(testcase_base.TestCase_Basic):
     def __docking(self):
         if not self.exists("docking/next"):
             return False
-        p = POINT(self.conversion_w(int(self.adb.get().DOCKING_X)), 
+        p = POINT(self.conversion_w(int(self.adb.get().DOCKING_X)),
                   self.conversion_h(int(self.adb.get().DOCKING_Y)),
-                  self.conversion_w(int(self.adb.get().DOCKING_WIDTH)), 
+                  self.conversion_w(int(self.adb.get().DOCKING_WIDTH)),
                   self.conversion_h(int(self.adb.get().DOCKING_HEIGHT)))
         for po in range(7):
             L.info(p);
@@ -315,3 +315,108 @@ class TestCase_Normal(testcase_base.TestCase_Basic):
             self.tap(nextstage); time.sleep(5)
         self.message(self.get("bot.attack_return"))
         return self.exists("basic/home")
+
+
+    def __get_path(self, target):
+        try:
+            if self.get("args.package") == None:
+                return os.path.join(TMP_REFERENCE_DIR, target)
+            else:
+                return os.path.join(
+                    TMP_REFERENCE_DIR, self.get("args.package"), target)
+        except Exception as e:
+            L.warning(e); raise e
+
+    def quest_search_id(self, _id):
+        path = None
+        for f in find_all_files(self.__get_path("quest")):
+            if _id in str(f):
+                if "daily" in f: path = "quest/daily"
+                elif "weekly" in f: path = "quest/weekly"
+
+                if "attack" in f: _id = "attack/%s" % _id
+                elif "exercises" in f: _id = "exercises/%s" % _id
+                elif "expedition" in f: _id = "expedition/%s" % _id
+                elif "supply" in f: _id = "supply/%s" % _id
+
+                L.debug("%s -> %s/id/%s" % (str(f), path, _id))
+                return path, _id
+
+    def quest_done(self):
+        if not self.exists("quest/mission"): return False
+        self.tap("quest/perform"); self.sleep(3)
+        while self.exists("quest/done"):
+            self.tap("quest/done")
+            self.sleep()
+            self.tap("quest/close"); time.sleep(4)
+        return True
+
+    def quest_check(self, target, crop_target, _id, threshold=0.2, count=5):
+        box_result = self.match_quest(
+            crop_target, _id, area=None, timeout=count)
+        L.info(box_result)
+        if box_result == None: return False
+        result = self.match(
+            target, _id=None, area=box_result, timeout=count, multiple=False)
+        if result == None:
+            self._tap(box_result, threshold); self.sleep()
+        return True
+
+    def quest_remove(self, target, crop_target, _id, threshold=0.2, count=5):
+        box_result = self.match_quest(
+            crop_target, _id, area=None, timeout=count)
+        if box_result == None: return False
+        result = self.match(
+            target, _id=None, area=box_result, timeout=count, multiple=False)
+        if result != None:
+            self._tap(box_result, threshold); self.sleep()
+        return True
+
+    def quest_open(self):
+        if not self.exists("basic/home"): return False
+        self.tap("home/quest"); self.sleep(base=4)
+        while not self.exists("quest"):
+            self.tap("home/quest"); self.sleep(base=4)
+        assert self.exists("quest")
+        self.message(self.get("bot.quest"))
+        self.tap_check("quest"); self.sleep()
+        self.quest_done(); self.sleep()
+        if not self.exists("quest/mission"):
+            self.tap("quest/return"); self.sleep()
+            assert self.wait("basic/home")
+            return False
+        return True
+
+    def quest_search(self, _id, remove=False):
+        q_path, _id = self.quest_search_id(_id)
+        if "daily" in q_path:
+            if not self.exists("quest/daily/focus"):
+                while not self.exists("quest/daily/focus"):
+                    self.tap("quest/daily"); self.sleep()
+        elif "weekly" in q_path:
+            if not self.exists("quest/weekly/focus"):
+                while not self.exists("quest/weekly/focus"):
+                    self.tap("quest/weekly"); self.sleep()
+        if remove:
+            if not self.quest_remove("quest/acceptance", q_path, _id):
+                return False
+        else:
+            if not self.quest_check("quest/acceptance", q_path, _id):
+                return False
+        return True
+
+    def quest_upload(self):
+        if not self.exists("quest/mission"):
+            self.tap("quest/return"); self.sleep()
+            assert self.wait("basic/home")
+            return False
+        if not self.exists("quest/perform_select"):
+            self.tap("quest/perform"); self.sleep(4)
+        self.upload("quest_%s" % self.adb.get().TMP_PICTURE)
+        self.tap_check("quest/return"); self.sleep()
+        return self.wait("basic/home")
+
+    def quest_attack(self, _id):
+        assert self.quest_open()
+        result = self.quest_search(_id); self.sleep(1)
+        return result, self.quest_upload()

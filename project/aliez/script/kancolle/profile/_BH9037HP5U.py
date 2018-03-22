@@ -31,6 +31,11 @@ class _BH9037HP5U(android_base.Android):
     DOCKING_WIDTH = "330"
     DOCKING_HEIGHT = "66"
 
+    LEVELING_X = "550"
+    LEVELING_Y = "560"
+    LEVELING_WIDTH = "260"
+    LEVELING_HEIGHT = "70"
+
     FORMATION_X = "210"
     FORMATION_Y = "250"
     FORMATION_WIDTH = "305"

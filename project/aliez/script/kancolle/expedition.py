@@ -26,15 +26,16 @@ class TestCase(testcase_kancolle.TestCase):
 
             info("*** Supply Fleet. ***", cr=False)
             while self.expedition_result(): self.sleep()
-            assert self.supply_all()
+            result, fleets = self.supply_all()
+            assert result
 
             info("*** Quest Check. ***", cr=False)
-            while self.expedition_result(): self.sleep(1)
-            assert self.quest_expedition()
+            while self.expedition_result(): self.sleep()
+            assert self.quest_receipt(["DP01", "DP02", "WP01", "WP02", "WP03"])
 
             info("*** Expedition Start. ***", cr=False)
-            while self.expedition_result(): self.sleep(1)
-            assert self.expedition_all()
+            while self.expedition_result(): self.sleep()
+            assert self.expedition_all(fleets)
 
             info("*** Test TearDown. ***", cr=False)
             while self.expedition_result(): self.sleep()

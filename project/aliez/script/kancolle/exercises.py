@@ -25,26 +25,26 @@ class TestCase(testcase_kancolle.TestCase):
             assert self.initialize(self.get("exercises.composition"))
 
             info("*** Quest Check. ***", cr=False)
-            while self.expedition_result(): self.sleep(1)
-            assert self.quest_exercises()
+            while self.expedition_result(): self.sleep()
+            assert self.quest_receipt(["DX01", "DX02", "WX01"])
 
             info("*** Exercises. ***", cr=False)
-            while self.expedition_result(): self.sleep(1)
+            while self.expedition_result(): self.sleep()
             assert self.exercises()
 
             info("*** Supply Fleet. ***", cr=False)
-            while self.expedition_result(): self.sleep(1)
+            while self.expedition_result(): self.sleep()
             assert self.supply(self.get("exercises.composition"))
 
             info("*** Test TearDown. ***", cr=False)
-            while self.expedition_result(): self.sleep(1)
+            while self.expedition_result(): self.sleep()
 
             self.minicap_finish(); self.sleep()
 
         except Exception as e:
-            while self.expedition_result(): self.sleep(1)
-            self.quest_exercises_remove()
-            while self.expedition_result(): self.sleep(1)
+            while self.expedition_result(): self.sleep()
+            self.quest_receipt(["DX01", "DX02", "WX01"], _remove=True)
+            while self.expedition_result(): self.sleep()
             self.minicap_finish(); self.sleep()
             L.warning(type(e).__name__ + ": " + str(e))
             self.minicap_create_video()

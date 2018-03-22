@@ -39,8 +39,7 @@ class TestCase_Basic(testcase.TestCase_Base):
 
     def upload(self, filename=None, size="360P", channel=None):
         if self.debug(): pass
-        else:
-            self.__upload(self.__capture(filename, size))
+        else: self.__upload(self.__capture(filename, size))
 
     def capture(self, filename=None, size="360P"):
         return self.__capture(filename, size)
@@ -115,6 +114,10 @@ class TestCase_Basic(testcase.TestCase_Base):
             'delay': "%dsec" % timeout
         }
         L.info("Call %s : %s" % (job, self.jenkins.invoke_job_with_params(job, params)))
+
+    def __call_job_tree(self, _ids, timeout=60):
+        for _id in _ids:
+            self.invoke_quest_job(_id, timeout)
 
     def call_job_tree(self, _id, timeout=60):
         if _id == "DB01":
