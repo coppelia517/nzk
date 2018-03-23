@@ -145,7 +145,7 @@ class TestCase(testcase_normal.TestCase_Normal):
             self.tap("basic/next"); self.sleep(5)
         return True
 
-    def attack(self, fleet, id):
+    def attack(self, fleet, id, check=None):
         if not self.exists("basic/home"): return False
         self.tap_check("home/attack"); self.sleep()
         assert self.exists("attack")
@@ -164,7 +164,7 @@ class TestCase(testcase_normal.TestCase_Normal):
             self.message(self.get("bot.attack_rack")); self.home(); return True
         if self.exists("attack/damage"):
             self.message(self.get("bot.attack_damage")); self.home(); return True
-        if not self.__leveling_status_check_leveling():
+        if not self.__attack_status_check(check):
             L.critical("Not Enough.")
             return self.home()
         if self.tap_check("attack/start"): self.sleep(7)
@@ -174,3 +174,64 @@ class TestCase(testcase_normal.TestCase_Normal):
         self.message(self.get("bot.attack_success"))
         return self.wait("attack/compass_b")
 
+    def __attack_stage(self, id):
+        if int(id) > 30: self.tap("attack/stage", _id="6"); self.sleep()
+        elif int(id) > 24: self.tap("attack/stage", _id="5"); self.sleep()
+        elif int(id) > 18: self.tap("attack/stage", _id="4"); self.sleep()
+        elif int(id) > 12: self.tap("attack/stage", _id="3"); self.sleep()
+        elif int(id) > 6: self.tap("attack/stage", _id="2"); self.sleep()
+        else: pass
+
+    def __attack_extra(self, id):
+        if id in ["5", "6", "11", "12", "17", "18"]:
+            self.tap("attack/extra"); self.sleep()
+
+
+    def __attack_id(self, id):
+        self.tap("attack/id", _id=id); self.sleep()
+
+    def __attack_status_check(self, check):
+        if check in "leveling":
+            return self.__leveling_status_check()
+        else:
+            return False
+
+
+    def __leveling_status_check(self):
+        p = POINT(int(self.adb.get().LEVELING_X),
+                    int(self.adb.get().LEVELING_Y),
+                    int(self.adb.get().LEVELING_WIDTH),
+                    int(self.adb.get().LEVELING_HEIGHT))
+        L.info(p)
+        #assert self.exists("attack/start")
+        return self.exists("attack/status/leveling", area=p)
+
+    def battle_leveling(self, formation):
+        if not self.exists("attack/compass_b"):
+            if self.exists("basic/home"): return True
+            else: return False
+        while not self.exists("basic/home"):
+            while not self.exists("basic/next"):
+                if self.tap("attack/compass", wait=False): self.sleep(10)
+                if self.tap("attack/formation/%s" % formation, wait=False): self.sleep(10)
+                if self.tap("attack/night_battle/start", wait=False): self.sleep(15)
+                if self.exists("attack/get"):
+                    self.tap("attack/return"); self.sleep(5)
+                    return self.exists("basic/home")
+                self.sleep(10)
+            if self.tap("basic/next", wait=False):
+                self.sleep(5)
+            while self.tap("basic/next", wait=False):
+                self.sleep(5)
+            if self.exists("basic/home"):
+                break
+            while not self.exists("attack/withdrawal"):
+                if self.exists("basic/next"):
+                    self.upload("drop_%s.png" % self.adb.get().SERIAL)
+                    self.tap("basic/next"); self.sleep(5)
+                if self.exists("basic/home"):
+                    self.message(self.get("bot.attack_return"))
+                    return True
+            self.tap("attack/withdrawal"); time.sleep(5)
+        self.message(self.get("bot.attack_return"))
+        return self.exists("basic/home")

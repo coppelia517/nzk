@@ -31,7 +31,10 @@ class TestCase(testcase_kancolle.TestCase):
 
             info("*** select Attack Stage. 3-2 ***", cr=False)
             while self.expedition_result(): self.sleep()
-            assert self.leveling(self.get("leveling.fleet"), self.get("leveling.stage"))
+            assert self.attack(
+                self.get("leveling.fleet"),
+                self.get("leveling.stage"),
+                self.get("leveling.status"))
 
             info("*** Attack Stage. 3-2 ***", cr=False)
             assert self.battle_leveling(self.get("leveling.fleet"))

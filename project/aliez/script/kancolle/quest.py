@@ -34,6 +34,10 @@ class TestCase(testcase_kancolle.TestCase):
             if find:
                 assert result
 
+                info("*** select Attack Stage. 3-2 ***", cr=False)
+                while self.expedition_result(): self.sleep()
+                assert self.leveling(self.get("leveling.fleet"), self.get("leveling.stage"))
+
                 info("*** Test TearDown. ***", cr=False)
                 while self.expedition_result(): self.sleep()
                 assert False
