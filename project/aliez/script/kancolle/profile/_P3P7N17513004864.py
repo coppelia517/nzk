@@ -33,10 +33,20 @@ class _P3P7N17513004864(android_base.Android):
     FORMATION_WIDTH = "445"
     FORMATION_HEIGHT = "115"
 
+    ATTACK_X = "560"
+    ATTACK_Y = "195"
+    ATTACK_WIDTH = "245"
+    ATTACK_HEIGHT= "75"
+
     LEVELING_X = "550"
     LEVELING_Y = "560"
     LEVELING_WIDTH = "260"
     LEVELING_HEIGHT = "70"
+
+    BATTLE_X = "330"
+    BATTLE_Y = "280"
+    BATTLE_WIDTH = "245"
+    BATTLE_HEIGHT = "68"
 
     DOCKING_X = "800"
     DOCKING_Y = "228"

@@ -167,6 +167,7 @@ class TestCase(testcase_normal.TestCase_Normal):
         if not self.__attack_status_check(check):
             L.critical("Not Enough.")
             return self.home()
+        if self.exists("attack/caution"): return self.home()
         if self.tap_check("attack/start"): self.sleep(7)
         if self.exists("attack/unable"):
             self.message(self.get("bot.attack_failed"))
@@ -194,14 +195,31 @@ class TestCase(testcase_normal.TestCase_Normal):
         if check in "leveling":
             return self.__leveling_status_check()
         else:
-            return False
+            return self.__attack_status_check_detail(check)
 
+    def __attack_status_check_detail(self, check):
+        p = POINT(int(self.adb.get().ATTACK_X),
+                    int(self.adb.get().ATTACK_Y),
+                    int(self.adb.get().ATTACK_WIDTH),
+                    int(self.adb.get().ATTACK_HEIGHT))
+        if check in "submarine": num = 6
+        elif check in "school": num = 4
+        else : num = 0
+        for _ in range(num):
+            if not self.exists("attack/status/%s" % check, area=p):
+                return False
+
+            if self.adb.get().LOCATE == "V":
+                p.x = int(p.x) - int(p.width); L.info("Point : %s" % str(p))
+            else:
+                p.y = int(p.y) + int(p.height); L.info("Point : %s" % str(p))
+        return True
 
     def __leveling_status_check(self):
         p = POINT(int(self.adb.get().LEVELING_X),
-                    int(self.adb.get().LEVELING_Y),
-                    int(self.adb.get().LEVELING_WIDTH),
-                    int(self.adb.get().LEVELING_HEIGHT))
+                  int(self.adb.get().LEVELING_Y),
+                  int(self.adb.get().LEVELING_WIDTH),
+                  int(self.adb.get().LEVELING_HEIGHT))
         L.info(p)
         #assert self.exists("attack/start")
         return self.exists("attack/status/leveling", area=p)
@@ -235,3 +253,61 @@ class TestCase(testcase_normal.TestCase_Normal):
             self.tap("attack/withdrawal"); time.sleep(5)
         self.message(self.get("bot.attack_return"))
         return self.exists("basic/home")
+
+    def battle_quest(self, formation, check=None, withdrawal=False):
+        if not self.exists("attack/compass_b"):
+            if self.exists("basic/home"): return True
+            else: return False
+        while not self.exists("basic/home"):
+            while not self.exists("basic/next"):
+                if self.tap("attack/compass", wait=False): self.sleep(10)
+                if self.tap("attack/formation/%s" % formation, wait=False): self.sleep(10)
+                if self.tap("attack/night_battle/start", wait=False): self.sleep(15)
+                if self.exists("attack/get"):
+                    self.tap("attack/return")
+                    self.sleep(5)
+                    return self.exists("basic/home")
+                self.sleep(10)
+            if self.tap("basic/next", wait=False): self.sleep(5)
+            nextstage = "attack/charge"
+            if withdrawal or self.exists("attack/result_damage") or not self.__battle_status_check(check):
+                nextstage = "attack/withdrawal"
+            while self.tap("basic/next", wait=False):
+                self.sleep(5)
+            if self.exists("basic/home"): break
+            while not self.exists(nextstage):
+                if self.exists("basic/next"):
+                    self.upload("drop_%s.png" % self.adb.get().SERIAL)
+                    self.tap("basic/next")
+                    self.sleep(5)
+                if self.exists("basic/home"):
+                    self.message(self.get("bot.attack_return"))
+                    return True
+            self.tap(nextstage)
+            time.sleep(5)
+        self.message(self.get("bot.attack_return"))
+        return self.exists("basic/home")
+
+    def __battle_status_check(self, check):
+        if check is None:
+            return True
+        p = POINT(
+            int(self.adb.get().BATTLE_X),
+            int(self.adb.get().BATTLE_Y),
+            int(self.adb.get().BATTLE_WIDTH),
+            int(self.adb.get().BATTLE_HEIGHT))
+        L.info(p)
+        if check in "submarine": num = 6
+        elif check in "school": num = 4
+        else : num = 0
+        for _ in range(num):
+            if not self.exists("attack/battle/status/%s" % check, area=p):
+                return False
+
+            if self.adb.get().LOCATE == "V":
+                p.x = int(p.x) - int(p.width)
+                L.info("Point : %s" % str(p))
+            else:
+                p.y = int(p.y) + int(p.height)
+                L.info("Point : %s" % str(p))
+        return True

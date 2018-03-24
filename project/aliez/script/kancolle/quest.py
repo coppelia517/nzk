@@ -34,9 +34,21 @@ class TestCase(testcase_kancolle.TestCase):
             if find:
                 assert result
 
-                info("*** select Attack Stage. 3-2 ***", cr=False)
+                info("*** select Attack Stage. ***", cr=False)
                 while self.expedition_result(): self.sleep()
-                assert self.leveling(self.get("leveling.fleet"), self.get("leveling.stage"))
+                assert self.attack(self.get("%s.fleet" % q),
+                                   self.get("%s.stage" % q),
+                                   self.get("%s.status" % q))
+
+                info(" *** Attack. *** ", cr=False)
+                if self.get("%s.stage" % q) == "14":
+                    assert self.battle_leveling(self.get("%s.formation" % q))
+                else:
+                    assert self.battle_quest(self.get("%s.formation" % q), self.get("%s.status" % q))
+
+                info("*** Supply & Docking Start. ***", cr=False)
+                while self.expedition_result(): self.sleep()
+                assert self.supply_and_docking(self.get("%s.fleet" % q))
 
                 info("*** Test TearDown. ***", cr=False)
                 while self.expedition_result(): self.sleep()
