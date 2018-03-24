@@ -31,7 +31,7 @@ class TestRunner(object):
         self.report = self.workspace.mkdir("report")
 
         self.tmp_video = self.workspace.mkdir(os.path.join("tmp", "video"))
-        self.workspace.rmdir(os.path.join("tmp", "evidence"))
+        #self.workspace.rmdir(os.path.join("tmp", "evidence"))
         self.tmp_evidence = self.workspace.mkdir(os.path.join("tmp","evidence"))
 
     def load(self, testcase, host):
