@@ -51,7 +51,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         proc = cls.service["aliez.stve.minicap"].get_process(LOG_DIR)
         cls.minicap = MinicapProc(stream, proc, debug=cls.get("args.debug"))
 
-        if not self.jenkins():
+        if not cls.jenkins():
             cls.ocr = cls.service["aliez.stve.ocr"].get(cls.pic)
 
     def minicap_start(self):
