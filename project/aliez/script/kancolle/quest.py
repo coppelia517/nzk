@@ -55,12 +55,12 @@ class TestCase(testcase_kancolle.TestCase):
                 assert False
             else:
                 while self.expedition_result(): self.sleep()
-                # self.call_job_tree(q)
+                self.call_job_tree(q)
                 self.minicap_finish(); self.sleep()
 
         except Exception as e:
             while self.expedition_result(): self.sleep()
-            # self.invoke_quest_job(q)
+            self.invoke_quest_job(q)
             self.minicap_finish(); self.sleep()
             L.warning(type(e).__name__ + ": " + str(e))
             assert False
