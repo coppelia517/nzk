@@ -29,10 +29,6 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         self.get_service()
         self._wait_loop_flag = False
     
-    @classmethod
-    def jenkins(cls):
-        return cls.get("args.jenkins")
-
     def arg_parse(self, parser):
         super(TestCase_Base, self).arg_parse(parser)
         parser.add_argument("-s", "--serial", action='store', dest="serial", help="Android Serial.")
@@ -63,17 +59,12 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         stream = cls.service["aliez.stve.minicap"].get_stream(cls.get("minicap.ip"), cls.get("minicap.port"))
         proc = cls.service["aliez.stve.minicap"].get_process(LOG_DIR)
         cls.minicap = MinicapProc(stream, proc, debug=cls.get("args.debug"))
-
-        if not cls.jenkins():
-            cls.ocr = cls.service["aliez.stve.ocr"].get(cls.pic)
+        cls.ocr = cls.service["aliez.stve.ocr"].get(cls.pic)
 
 
     def minicap_start(self):
         L.info(" === Open Minicap Process. === ")
-        if self.jenkins():
-            self.minicap.start(self.adb, self.pic)
-        else:
-            self.minicap.start(self.adb, self.pic, self.ocr)
+        self.minicap.start(self.adb, self.pic, self.ocr)
 
     def minicap_finish(self):
         L.info(" === Close Minicap Process. === ")
@@ -149,8 +140,6 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         return POINT(x, y, width, height)
 
     def text(self, location, text=None, area=None, timeout=TIMEOUT):
-        if self.jenkins():
-            return True
         L.debug("OCR Test Check: Location %s, Text %s, Area %s, Timeout %s." % (location, text, area, timeout))
         path, name, area = self.validate(location, None, area, func="ocr")
         if text is not None:
