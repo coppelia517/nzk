@@ -136,7 +136,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         return POINT(x, y, width, height)
 
     def text(self, location, text=None, area=None, timeout=TIMEOUT):
-        if not self.jenkins():
+        if self.jenkins():
             return True
         L.debug("OCR Test Check: Location %s, Text %s, Area %s, Timeout %s." % (location, text, area, timeout))
         path, name, area = self.validate(location, None, area, func="ocr")
