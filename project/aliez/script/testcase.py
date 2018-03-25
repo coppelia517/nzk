@@ -29,8 +29,9 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         self.get_service()
         self._wait_loop_flag = False
     
-    def jenkins(self):
-        return self.get("args.jenkins")
+    @classmethod
+    def jenkins(cls):
+        return cls.get("args.jenkins")
 
     def arg_parse(self, parser):
         super(TestCase_Base, self).arg_parse(parser)
