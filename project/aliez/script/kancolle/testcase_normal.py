@@ -45,7 +45,7 @@ class TestCase_Normal(testcase_base.TestCase_Basic):
             self.tap("basic/next"); self.sleep()
             self.upload()
             self.tap("basic/next"); self.sleep(3)
-            #self.invoke_quest_job("expedition", 60)
+            self.invoke_quest_job("expedition", 60)
             return self.exists("basic/expedition")
         else:
             return False
