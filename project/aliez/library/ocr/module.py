@@ -22,6 +22,7 @@ class Ocr(object):
     def __init__(self, _pic):
         self.pic = _pic
         tools = pyocr.get_available_tools()
+        L.info(tools)
         if len(tools) == 0:
             raise OcrError("No OCR tool found.")
         self.tool = tools[0]
