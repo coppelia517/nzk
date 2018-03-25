@@ -46,6 +46,7 @@ class TestCase_Unit(unittest.TestCase):
         # parser.add_argument("-p", "--package", action='store', dest='package', help='TestCase Package Name.')
 
         parser.add_argument("--debug", action='store_true', default=False, dest="debug", help="Debug Flag.")
+        parser.add_argument("--jenkins", action='store_true', default=False, dest="jenkins", help="Jenkins Flag.")
         return parser
 
     @classmethod

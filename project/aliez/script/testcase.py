@@ -28,6 +28,9 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         self.get_config(self.get("args.config"))
         self.get_service()
         self._wait_loop_flag = False
+    
+    def jenkins(self):
+        return self.get("args.jenkins")
 
     def arg_parse(self, parser):
         super(TestCase_Base, self).arg_parse(parser)
@@ -48,7 +51,8 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         proc = cls.service["aliez.stve.minicap"].get_process(LOG_DIR)
         cls.minicap = MinicapProc(stream, proc, debug=cls.get("args.debug"))
 
-        cls.ocr = cls.service["aliez.stve.ocr"].get(cls.pic)
+        if not self.jenkins():
+            cls.ocr = cls.service["aliez.stve.ocr"].get(cls.pic)
 
     def minicap_start(self):
         L.info(" === Open Minicap Process. === ")
@@ -128,6 +132,8 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         return POINT(x, y, width, height)
 
     def text(self, location, text=None, area=None, timeout=TIMEOUT):
+        if not self.jenkins():
+            return True
         L.debug("OCR Test Check: Location %s, Text %s, Area %s, Timeout %s." % (location, text, area, timeout))
         path, name, area = self.validate(location, None, area, func="ocr")
         if text is not None:
