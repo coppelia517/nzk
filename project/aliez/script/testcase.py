@@ -37,6 +37,9 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         super(TestCase_Base, self).arg_parse(parser)
         parser.add_argument("-s", "--serial", action='store', dest="serial", help="Android Serial.")
         parser.add_argument("-c", "--config", action='store', dest="config", help="Config File Name.")
+        parser.add_argument("-i", "--slack", action='store', dest="slack", help="Slack Serial.")
+        parser.add_argument("-u", "--user", action='store', dest="user", help="Jenkins User Name.")
+        parser.add_argument("-p", "--password", action='store', dest="password", help="Jenkins User Password.")
         return parser
 
     @classmethod
@@ -47,6 +50,15 @@ class TestCase_Base(testcase_base.TestCase_Unit):
         else:
             cls.adb = cls.service["stve.android"].get(cls.get("args.serial"))
         cls.pic = cls.service["stve.picture"].get()
+        
+        if cls.get("args.slack") == None:
+            serial = cls.get("slack.serial")
+        else:
+            serial = cls.get("args.slack")
+        cls.slack = cls.service["stve.slack"].get(serial)
+
+        cls.jenkins = cls.service["stve.jenkins"].get(
+            cls.get("jenkins.url"), cls.get("args.user"), cls.get("args.password"))
 
         stream = cls.service["aliez.stve.minicap"].get_stream(cls.get("minicap.ip"), cls.get("minicap.port"))
         proc = cls.service["aliez.stve.minicap"].get_process(LOG_DIR)
@@ -54,6 +66,7 @@ class TestCase_Base(testcase_base.TestCase_Unit):
 
         if not cls.jenkins():
             cls.ocr = cls.service["aliez.stve.ocr"].get(cls.pic)
+
 
     def minicap_start(self):
         L.info(" === Open Minicap Process. === ")

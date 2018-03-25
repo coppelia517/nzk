@@ -19,9 +19,6 @@ class TestCase_Basic(testcase.TestCase_Base):
 
     def arg_parse(self, parser):
         super(TestCase_Basic, self).arg_parse(parser)
-        parser.add_argument("-i", "--slack", action='store', dest="slack", help="Slack Serial.")
-        parser.add_argument("-u", "--user", action='store', dest="user", help="Jenkins User Name.")
-        parser.add_argument("-p", "--password", action='store', dest="password", help="Jenkins User Password.")
         parser.add_argument("-q", "--quest", action='store', dest="quest", help="Quest ID Number.")
         parser.add_argument("-t", "--timeout", action='store', dest="timeout", help="Timeout.")
 
