@@ -4,6 +4,7 @@ import glob
 import pytest
 
 from stve.log import Log
+from stve.exception import *
 
 from aliez.utility import *
 from aliez.script import testcase

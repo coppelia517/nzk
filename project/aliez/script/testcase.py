@@ -57,7 +57,10 @@ class TestCase_Base(testcase_base.TestCase_Unit):
 
     def minicap_start(self):
         L.info(" === Open Minicap Process. === ")
-        self.minicap.start(self.adb, self.pic, self.ocr)
+        if self.jenkins():
+            self.minicap.start(self.adb, self.pic)
+        else:
+            self.minicap.start(self.adb, self.pic, self.ocr)
 
     def minicap_finish(self):
         L.info(" === Close Minicap Process. === ")

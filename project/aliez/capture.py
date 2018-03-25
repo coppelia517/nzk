@@ -57,7 +57,7 @@ class MinicapProc(object):
 
         self.counter = 0
 
-    def start(self, _adb, _pic, _ocr):
+    def start(self, _adb, _pic, _ocr=None):
         self.adb = _adb
         self.pic = _pic
         self.ocr = _ocr
