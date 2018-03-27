@@ -94,7 +94,7 @@ class TestCase_Basic(testcase.TestCase_Base):
         return False
 
     def match_quest(self, location, _num, area=None, timeout=TIMEOUT):
-        L.info("Match Request : %s " % (location) )
+        L.info("Match Request : %s " % (location) ) 
         path, name, area = self.validate(location, None, area, _num)
         for f in glob.glob(os.path.join(path,name)):
             result = self.minicap.search_pattern(
