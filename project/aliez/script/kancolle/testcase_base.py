@@ -44,7 +44,7 @@ class TestCase_Basic(testcase.TestCase_Base):
         else: self.__upload(self.__capture(filename, size))
 
     def capture(self, filename=None, size="360P"):
-        return self.__capture(filename, size)
+        return self.__capture(filename, size) 
 
     def upload_file(self, fname, channel=None):
         self.__upload(fname, channel)
