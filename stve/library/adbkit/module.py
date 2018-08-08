@@ -83,22 +83,22 @@ class AndroidBase(object):
         else:
             return "-s %s:%s" % (self.profile.IP, self.profile.PORT)
 
-    def _adb(self, cmd, async=False, debug=False, timeout=TIMEOUT):
+    def _adb(self, cmd, _async=False, debug=False, timeout=TIMEOUT):
         if "adb" in cmd:
             L.debug("command include [adb]. : %s" % cmd)
         cmd = "adb %s" % cmd
-        if async: self.__exec_bg(cmd, timeout, debug)
+        if _async: self.__exec_bg(cmd, timeout, debug)
         else: return self.__exec(cmd, timeout, debug)
 
     def kill(self):
         cmd = "kill-server"
         return self._adb(cmd)
 
-    def adb(self, cmd, async=False, debug=False, timeout=TIMEOUT):
+    def adb(self, cmd, _async=False, debug=False, timeout=TIMEOUT):
         if "adb" in cmd:
             L.debug("command include [adb]. : %s" % cmd)
         cmd = "%s %s" % (self._target(), cmd)
-        return self._adb(cmd, async, debug, timeout)
+        return self._adb(cmd, _async, debug, timeout)
 
     def push(self, src, dst, timeout=TIMEOUT):
         L.debug("[push] : %s -> %s" % (src, dst))
@@ -110,11 +110,11 @@ class AndroidBase(object):
         cmd = "pull %s %s" % (src, dst)
         return self.adb(cmd, timeout)
 
-    def shell(self, cmd, async=False, debug=False, timeout=TIMEOUT):
+    def shell(self, cmd, _async=False, debug=False, timeout=TIMEOUT):
         if "shell" in cmd:
             L.debug("command include [shell]. : %s" % cmd)
         cmd = "shell %s" % (cmd)
-        return self.adb(cmd, async, debug, timeout)
+        return self.adb(cmd, _async, debug, timeout)
 
     def connect(self):
         if self.WIFI:
@@ -171,8 +171,8 @@ class Android(object):
     def get(self):
         return self._adb.get_profile()
 
-    def shell(self, cmd, async=False, debug=False, timeout=TIMEOUT):
-        return self._adb.shell(cmd, async, debug, timeout)
+    def shell(self, cmd, _async=False, debug=False, timeout=TIMEOUT):
+        return self._adb.shell(cmd, _async, debug, timeout)
 
     def dumpsys(self, category):
         cmd = "dumpsys %s" % category
@@ -205,11 +205,11 @@ class Android(object):
         cmd = "forward %s" % cmd
         return self._adb.adb(cmd)
 
-    def input(self, cmd, async=False, debug=False):
+    def input(self, cmd, _async=False, debug=False):
         if "input" in cmd:
             L.debug("command include [input]. : %s" % cmd)
         cmd = "input %s" % cmd
-        return self._adb.shell(cmd, async, debug)
+        return self._adb.shell(cmd, _async, debug)
 
     def am(self, cmd):
         if "am" in cmd:
@@ -219,7 +219,7 @@ class Android(object):
 
     def tap(self, x, y):
         cmd = "tap %d %d" % (x, y)
-        return self.input(cmd, async=True)
+        return self.input(cmd, _async=True)
 
     def invoke(self, app):
         cmd = "start -n %s" % (app)
@@ -227,7 +227,7 @@ class Android(object):
 
     def keyevent(self, code):
         cmd = "keyevent %s " % (code)
-        return self.input(cmd, async=True)
+        return self.input(cmd, _async=True)
 
     def text(self, cmd):
         args = cmd.split(" ")
