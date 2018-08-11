@@ -34,9 +34,9 @@ class _P3P7N17513004864(android_base.Android):
     FORMATION_HEIGHT = "115"
 
     ATTACK_X = "560"
-    ATTACK_Y = "195"
+    ATTACK_Y = "190"
     ATTACK_WIDTH = "245"
-    ATTACK_HEIGHT= "75"
+    ATTACK_HEIGHT= "76"
 
     LEVELING_X = "550"
     LEVELING_Y = "560"
