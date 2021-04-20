@@ -11,7 +11,7 @@ numpy==1.14.1
 opencv-python==3.4.0.12
 Pillow==5.0.0
 pluggy==0.6.0
-py==1.5.2
+py==1.10.0
 pylint==1.8.3
 pyocr==0.5.1
 pytest==3.4.1
