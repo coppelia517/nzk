@@ -17,4 +17,4 @@ six==1.11.0
 slacker==0.9.60
 stve==0.1.0a0
 termcolor==1.1.0
-urllib3==1.22
+urllib3==1.26.5
