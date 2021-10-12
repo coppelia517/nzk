@@ -6,7 +6,7 @@ ffmpeg-python==0.1.10
 future==0.16.0
 idna==2.6
 numpy==1.14.1
-opencv-python==3.4.0.12
+opencv-python==3.4.7.28
 Pillow==5.0.0
 pluggy==0.6.0
 py==1.5.2
